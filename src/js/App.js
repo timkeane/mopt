@@ -110,7 +110,7 @@ class App extends FinderApp {
         $('.geostats-legend-title').html(soda[event.target.value].name)
       })
     }).catch(err => {
-      new Dialog().ok({message: `Unable to load ${soda.EVICTION.name} from NYC OpenData`})
+      new Dialog().ok({message: `Unable to load ${soda[event.target.value].name} from NYC OpenData`})
     })
   }
   ready(features) {
