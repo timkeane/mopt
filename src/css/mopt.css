@@ -1,0 +1,46 @@
+.lst-srch {
+    display: none;
+}
+table.list {
+  width: calc(100% - 10px);
+  border-collapse: collapse;
+  margin: 5px;
+}
+table.list thead td, table.list thead td * {
+  color: white;
+  background-color: black;
+}
+table.list thead td {
+  font-weight: bold;
+}
+table.list thead td span {
+  float: right;
+  font-size: 20px;
+  margin: -3px 3px 0 0;
+  font-weight: normal;
+}
+table.list td {
+  border: 1px solid black;
+  padding: 3px;
+}
+table.list thead td:first-of-type {
+  border-right: 1px solid white;
+}
+.lst-it:nth-child(even) {
+  background-color: var(--color-medium);
+}
+div.legend {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+}
+.legend table td.sym {
+  width: 20px;
+}
+.legend table td {
+  text-align: center;
+}
+.legend table tr.lbl {
+  display: none;
+}
