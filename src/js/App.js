@@ -22,11 +22,12 @@ class App extends FinderApp {
         dataProjection: 'EPSG:4326',
         featureProjection: 'EPSG:3857'
       }),
-      facilityTabTitle: 'List',
+      facilityTabTitle: 'Data',
       facilityStyle: facilityStyle.style(),
       decorations: [decorations],
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
+    $('#banner').addClass('dataset')
     this.zips = zips
     this.minMax(zips)
     this.adjustPager()
@@ -35,7 +36,7 @@ class App extends FinderApp {
     this.legend()
   }
   addChoices() {
-    const select = $('<select class="btn btn-rad-all dataset"></select>')
+    const select = $('<select id="dataset" class="btn btn-rad-all"></select>')
       .change($.proxy(this.choose, this))
     Object.keys(soda).forEach(key => {
       select.append(`<option value="${key}">${soda[key].name}</option>`)
@@ -82,7 +83,6 @@ class App extends FinderApp {
   }
   choose(event) {
     const url = soda[event.target.value].url
-    $('table.list span.dataset').html(soda[event.target.value].name)
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
@@ -93,6 +93,7 @@ class App extends FinderApp {
         this.zoomFull()
         this.sorted = {Name: false, Count: true}
         this.sort('Count')
+        $('.dataset').html(soda[event.target.value].name)
       })
     }).catch(err => {
       new Dialog().ok({message: `Unable to load ${soda.EVICTION.name} from NYC OpenData`})
@@ -106,7 +107,13 @@ class App extends FinderApp {
   minMax(zips) {
     const counts = []
     zips.forEach(zip => {
-      counts.push(zip.count * 1)
+      let z = zip.zip
+      //DOB Complaints missing a lot of zips
+      if (z && z.trim().length) {
+        z = z.trim()
+        zip.zip = z
+        counts.push(zip.count * 1)
+      }
     })
     counts.sort((a, b) => {
       if (a < b) {

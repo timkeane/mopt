@@ -57,7 +57,7 @@ const legend = (min, max) => {
     tbody.append(tr)
   })
   tbody.append(`<tr class="lbl"><td>${max}</td><td class="txt">&nbsp;</td></tr>`)
-  return $('<div class="legend"><h3>Total Evictions</h3></div>').append(table)
+  return $('<div class="legend"><h3 class="dataset">Evictions</h3></div>').append(table)
 }
 
 export default {style, legend}

@@ -34,9 +34,16 @@ div.legend {
   right: 0;
   bottom: 0;
   z-index: 2000;
+  background-color: rgba(255,255,255,.5);
+  padding :5px;
+}
+div.legend h3 {
+  margin: 0;
+  max-width: 150px;
 }
 .legend table td.sym {
   width: 20px;
+  opacity: .5;
 }
 .legend table td {
   text-align: center;
@@ -44,7 +51,18 @@ div.legend {
 .legend table tr.lbl {
   display: none;
 }
-select.dataset {
+#dataset {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
+}
+#tabs>.btns {
+  display: none;
+}
+.tabs .container {
+  height: 100%;
+}
+@media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
+  #tabs>.btns {
+    display: table;
+  }
 }
