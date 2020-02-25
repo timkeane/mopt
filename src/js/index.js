@@ -1,8 +1,12 @@
 import App from './App'
+import soda from './soda'
+import Dialog from 'nyc-lib/nyc/Dialog'
 
-fetch('https://data.cityofnewyork.us/resource/6z8x-wfk4.json?$select=eviction_zip%20as%20zip,%20count(eviction_zip)%20as%20count&$group=eviction_zip').then(response => {
-  response.json().then(soda => {
-    new App(soda)
+fetch(soda.EVICTION.url).then(response => {
+  response.json().then(json => {
+    new App(json)
   })
+}).catch(err => {
+  new Dialog().ok({message: `Unable to load ${soda.EVICTION.name} from NYC OpenData`})
 })
 

@@ -12,10 +12,12 @@ const COLORS = [
   '#99000d'
 ]
 
-const style = (min, max) => {
+const style = () => {
   return (feature, resolution) => {
+    const min = feature.app.min
+    const max = feature.app.max
     const range = (max - min) / COLORS.length
-    const count = feature.get('count') * 1
+    const count = feature.getCount() * 1
     let color = 'rgba(0,0,0,0)'
     COLORS.forEach((clr, i) => {
       const c = i + 1
@@ -29,7 +31,6 @@ const style = (min, max) => {
         }
       }            
     })
-
     return new Style({
       fill: new Fill({color}),
       stroke: new Stroke({width: 1, color: 'white'})
