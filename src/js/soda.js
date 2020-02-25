@@ -22,5 +22,17 @@ export default {
   OMO: {
     name: 'Open Market Order (OMO) Charges',
     url: 'https://data.cityofnewyork.us/resource/mdbu-nrqn.json?$select=zip,%20count(zip)%20as%20count&$group=zip'
+  },
+  ORDER_TO_REPAIR: {
+    name: 'Order to Repair/Vacate Orders',
+    url: 'https://data.cityofnewyork.us/resource/tb8q-a3ar.json?$select=postoce%20as%20zip,%20count(postoce)%20as%20count&$group=postoce'
+  },
+  CONH: {
+    name: 'Certification of No Harassment (CONH) Pilot Building List',
+    url: 'https://data.cityofnewyork.us/resource/bzxi-2tsw.json?$select=zipcode%20as%20zip,%20count(zipcode)%20as%20count&$group=zipcode'
+  },
+  SPECULATION: {
+    name: 'Speculation Watch List',
+    url: 'https://data.cityofnewyork.us/resource/adax-9mit.json?$select=postcode%20as%20zip,%20count(postcode)%20as%20count&$group=postcode'
   }
 }
