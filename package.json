@@ -1,6 +1,6 @@
 {
   "name": "mopt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "mopt",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/timkeane/mopt#readme",
   "dependencies": {
+    "geostats": "^1.8.0",
     "jquery": "^3.3.1",
     "nyc-lib": "^1.3.73",
     "ol": "^6.2.1",

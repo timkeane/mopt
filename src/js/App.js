@@ -9,6 +9,18 @@ import decorations from './decorations'
 import facilityStyle from './facility-style'
 import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
+import geostats from 'geostats'
+
+const CLASSIFY_METHOD = 'getClassJenks'
+const COLORS = [
+  '#762a83',
+  '#af8dc3',
+  '#e7d4e8',
+  '#f7f7f7',
+  '#d9f0d3',
+  '#7fbf7b',
+  '#1b7837'
+]
 
 class App extends FinderApp {
   constructor(zips) {
@@ -23,20 +35,20 @@ class App extends FinderApp {
         featureProjection: 'EPSG:3857'
       }),
       facilityTabTitle: 'Data',
-      facilityStyle: facilityStyle.style(),
+      facilityStyle: facilityStyle(),
       decorations: [decorations],
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
-    $('#banner').addClass('dataset')
+    $('#banner').addClass('geostats-legend-title')
     this.zips = zips
-    this.minMax(zips)
+    this.updateStats(zips)
     this.adjustPager()
     this.addChoices()
     this.zoomFull()
     this.legend()
   }
   addChoices() {
-    const select = $('<select id="dataset" class="btn btn-rad-all"></select>')
+    const select = $('<select id="dataset" class="btn rad-all"></select>')
       .change($.proxy(this.choose, this))
     Object.keys(soda).forEach(key => {
       select.append(`<option value="${key}">${soda[key].name}</option>`)
@@ -44,8 +56,10 @@ class App extends FinderApp {
     $('#facilities').prepend(select)
   }
   legend() {
-    $('div.legend').remove()
-    $(this.map.getTargetElement()).append(facilityStyle.legend(this.min, this.max))
+    const legend = $(this.stats.getHtmlLegend())
+    legend.find('.geostats-legend-title').html(soda[$('#dataset').val()].name)
+    $('div.geostats-legend').remove()
+    $(this.map.getTargetElement()).append(legend)
   }
   adjustPager() {
     this.sorted = {Name: false, Count: true}
@@ -86,25 +100,24 @@ class App extends FinderApp {
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
-        this.minMax(this.zips)
-        this.legend(this.min, this.max)
+        this.updateStats(this.zips)
+        this.legend()
         this.layer.setSource(new Source())
         this.layer.setSource(this.source)
         this.zoomFull()
         this.sorted = {Name: false, Count: true}
         this.sort('Count')
-        $('.dataset').html(soda[event.target.value].name)
+        $('.geostats-legend-title').html(soda[event.target.value].name)
       })
     }).catch(err => {
       new Dialog().ok({message: `Unable to load ${soda.EVICTION.name} from NYC OpenData`})
     })
-    
   }
   ready(features) {
     this.layer.setOpacity(.5)
     super.ready(this.sort('Count'))
   }
-  minMax(zips) {
+  updateStats(zips) {
     const counts = []
     zips.forEach(zip => {
       let z = zip.zip
@@ -112,19 +125,12 @@ class App extends FinderApp {
       if (z && z.trim().length) {
         z = z.trim()
         zip.zip = z
-        counts.push(zip.count * 1)
+        if (z) counts.push(zip.count * 1)
       }
     })
-    counts.sort((a, b) => {
-      if (a < b) {
-        return -1
-      } else if (a > b) {
-        return 1
-      }
-      return 0
-    })    
-    this.min = counts[0]
-    this.max = counts[counts.length - 1]
+    this.stats = new geostats(counts)
+    this.stats.setColors(COLORS)
+    this.buckets = this.stats[CLASSIFY_METHOD](COLORS.length)
   }
 }
 
@@ -132,7 +138,7 @@ App.LIST_HTML = `<table class="list">
   <thead>
     <tr>
       <td onclick="finderApp.sort(\'Name\')">ZIP Code <span>&#x21F5;</span></td>
-      <td onclick="finderApp.sort(\'Count\')"><span class="dataset">Evictions</span> <span>&#x21F5;</span></td>
+      <td onclick="finderApp.sort(\'Count\')"><span class="geostats-legend-title">Evictions</span> <span>&#x21F5;</span></td>
     <tr>
   </thead>
   </table>`

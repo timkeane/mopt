@@ -29,7 +29,8 @@ table.list thead td:first-of-type {
 .lst-it:nth-child(even) {
   background-color: var(--color-medium);
 }
-div.legend {
+div.geostats-legend {
+  width: 150px;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -37,19 +38,24 @@ div.legend {
   background-color: rgba(255,255,255,.5);
   padding :5px;
 }
-div.legend h3 {
-  margin: 0;
-  max-width: 150px;
+div.geostats-legend-title {
+  font-weight: bold;
 }
-.legend table td.sym {
-  width: 20px;
+div.geostats-legend div {
+  display: table-row;
+  margin-bottom: 3px;
+}
+div.geostats-legend div.geostats-legend-block {
+  display: table-cell;
+  height: 14px;
   opacity: .5;
+  border: 2px solid white;
+  width: 16px;
+  margin-right: 5px;
+  float: left;
 }
-.legend table td {
-  text-align: center;
-}
-.legend table tr.lbl {
-  display: none;
+div.geostats-legend, div.geostats-legend div.geostats-legend-title {
+  display: block;
 }
 #dataset {
   width: calc(100% - 10px);
