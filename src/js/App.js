@@ -10,10 +10,10 @@ import facilityStyle from './facility-style'
 import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
 import geostats from 'geostats'
-import Classify from './Classify'
+import Choropleth from './Choropleth'
 
-const CLASSIFY_METHOD = Classify.methods.jenks
-const COLORS = Classify.colors.divergent[0]
+const CLASSIFY_METHOD = Choropleth.METHODS.jenks.name
+const COLORS = Choropleth.COLORS.divergent[0]
 
 class App extends FinderApp {
   constructor(zips) {
@@ -35,6 +35,7 @@ class App extends FinderApp {
     $('#banner').addClass('geostats-legend-title')
     this.zips = zips
     this.updateStats(zips)
+    this.choropleth = new Choropleth()
     this.adjustPager()
     this.addChoices()
     this.zoomFull()
@@ -48,8 +49,13 @@ class App extends FinderApp {
     })
     $('#facilities').prepend(select)
   }
+  calssify() {
+    this.choropleth.define().then(result => {
+      console.warn(result, this.choropleth)
+    })
+  }
   legend() {
-    const legend = $(this.stats.getHtmlLegend())
+    const legend = $(this.stats.getHtmlLegend()).click($.proxy(this.calssify, this))
     legend.find('.geostats-legend-title').html(soda[$('#dataset').val()].name)
     $('div.geostats-legend').remove()
     $(this.map.getTargetElement()).append(legend)
@@ -123,6 +129,8 @@ class App extends FinderApp {
     })
     this.stats = new geostats(counts)
     this.stats.setColors(COLORS)
+    console.warn(CLASSIFY_METHOD,this.stats);
+    
     this.buckets = this.stats[CLASSIFY_METHOD](COLORS.length)
   }
 }
