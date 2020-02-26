@@ -10,17 +10,10 @@ import facilityStyle from './facility-style'
 import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
 import geostats from 'geostats'
+import Classify from './Classify'
 
-const CLASSIFY_METHOD = 'getClassJenks'
-const COLORS = [
-  '#762a83',
-  '#af8dc3',
-  '#e7d4e8',
-  '#f7f7f7',
-  '#d9f0d3',
-  '#7fbf7b',
-  '#1b7837'
-]
+const CLASSIFY_METHOD = Classify.methods.jenks
+const COLORS = Classify.colors.divergent[0]
 
 class App extends FinderApp {
   constructor(zips) {
