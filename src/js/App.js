@@ -30,12 +30,15 @@ class App extends FinderApp {
       facilityTabTitle: 'Data',
       facilityStyle: facilityStyle(),
       decorations: [decorations],
+      filterChoiceOptions: [],
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
     $('#banner').addClass('geostats-legend-title')
     this.zips = zips
     this.updateStats(zips)
     this.choropleth = new Choropleth()
+    $('#filters .apply').remove()
+    $('#filters').append(this.choropleth.getContainer())
     this.adjustPager()
     this.addChoices()
     this.zoomFull()

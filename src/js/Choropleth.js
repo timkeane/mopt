@@ -1,29 +1,39 @@
-import Dialog from 'nyc-lib/nyc/Dialog'
 import Choice from 'nyc-lib/nyc/Choice'
 import Collapsible from 'nyc-lib/nyc/Collapsible'
+import Container from 'nyc-lib/nyc/Container'
 
-class Choropleth {
+class Choropleth extends Container {
   constructor() {
-    this.dialog = new Dialog()
-    this.form = $('<div class="form"><div></div>')
-    this.method = this.choicesFromKeys(Choropleth.METHODS, 'method')
-    this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'Color scheme', 'clr-sch')
+    super('<div class="choro"></div>')
+    this.method = this.choicesFromKeys(Choropleth.METHODS, 'method', 'mthd')
+    this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'clr-sch')
+    this.color = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
-    this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch', true)
-    this.colorCollapsible = this.appendCollapsible('Colors', null, 'clrs', true)
+    this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch')
+    this.appendCollapsible('Color', this.color.getContainer(), 'clr')
+    this.apply = $('<button class="btn rad-all apply">Apply</button>')
+    this.cancel = $('<button class="btn rad-all cancel">Cancel</button>')
+    this.getContainer().append(this.apply).append(this.cancel)
     this.colorType.on('change', this.colorChoices, this)
+    this.apply.click($.proxy(this.btnHdlr, this))
+    this.cancel.click($.proxy(this.btnHdlr, this))
   }
-  appendCollapsible(title, content, css, collapsed) {
+  btnHdlr(event) {
+    if ($(event.target).hasClass('apply')) {
+      this.trigger('change', this)
+    }
+  }
+  appendCollapsible(title, content, css) {
     const collapsible = new Collapsible({
       target: $(`<div class="${css}"></div>`),
       title,
       content,
-      collapsed
+      collapsed: true
     })
-    this.form.append(collapsible.getContainer())
+    this.getContainer().append(collapsible.getContainer())
     return collapsible
   }
-  choicesFromKeys(obj, name, title, css, collapsed) {
+  choicesFromKeys(obj, name, title, css) {
     const choices = []
     Object.keys(obj).forEach(key => {
       const props = obj[key]
@@ -44,26 +54,19 @@ class Choropleth {
   }
   colorChoices(event) {
     const choices = []
-    event.choices.forEach(choice => {
-      const label = $('<div class="clr"></div>')
-      choice.values.forEach(color => {
-        label.append(`<div style="background-color:${color}"></div>`)
+    event.choices.forEach(colorSchemes => {
+      console.warn(1, colorSchemes);
+      colorSchemes.values.forEach(colorScheme => {
+        const label = $('<div class="clr">&nbsp;</div>')
+        console.warn(2,colorScheme);
+        colorScheme.forEach(color => {
+          console.warn(3,color);
+          label.append(`<div style="background-color:${color}"></div>`)
+        })
+        choices.push({name: 'colors', label, values: colorScheme})
       })
-      choices.push({name: 'colors', label, values: choice.values})
     })
-    this.colorCollapsible.getContainer().find('.content').html(
-      new Choice({
-        target: $(`<div class="clrs"></div>`),
-        choices,
-        radio: true
-      }).getContainer()
-    )
-  }
-  define() {
-    return this.dialog.yesNo({
-      message: this.form,
-      buttonText: ['Apply', 'Cancel']
-    })
+    this.color.setChoices(choices)
   }
 }
 

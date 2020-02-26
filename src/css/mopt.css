@@ -67,6 +67,21 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
 .tabs .container {
   height: 100%;
 }
+#filters button.apply {
+  display: inline-block;
+}
+.clps {
+  margin-bottom: 3px;
+}
+label div.clr div {
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: left;
+  border: 1px solid white;
+  opacity: .5;
+  margin-top: 7px;
+}
 @media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
   #tabs>.btns {
     display: table;
