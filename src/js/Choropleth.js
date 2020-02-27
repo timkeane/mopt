@@ -13,16 +13,47 @@ class Choropleth extends Container {
     this.colorsClps = this.appendCollapsible('Color', this.colors.getContainer(), 'clr')
     this.count = this.find('select.count')
     this.apply = $('<button class="btn rad-all apply">Apply</button>')
-    this.cancel = $('<button class="btn rad-all cancel">Cancel</button>')
-    this.getContainer().append(this.apply).append(this.cancel)
+    this.getContainer().append(this.apply)
     this.colorType.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
-    this.cancel.click($.proxy(this.btnHdlr, this))
+    this.count.click($.proxy(this.adjustColors, this))
     this.val(options)
+  }
+  adjustColors() {
+    const size = $(this.count).val()
+    const choices = this.colors.choices
+    choices.forEach(choice => {
+      const label = $('<div class="clr">&nbsp;</div>')
+      const values = this.resizeColors(choice.values, size)
+      values.forEach(color => {
+        label.append(`<div style="background-color:${color}"></div>`)
+      })
+      choice.label = label
+      choice.values = values
+    })
+    console.warn(choices)
+    this.colors.setChoices(choices)
   }
   val(options) {
     if (options) {
-      // return this.val()
+      this.count.val(options.count)
+      this.method.choices.forEach(choice => {
+        if (choice.values[0] === options.method) {
+          this.method.val([choice])
+        }
+      })
+      this.colorType.choices.forEach(choice => {
+        if (choice.label === options.colorType) {
+          this.colorType.val([choice])
+        }
+      })
+      this.colorType.trigger('change', this.colorType)
+      this.colors.choices.forEach(choice => {
+        if (choice.values === options.colors) {
+          this.colors.val([choice])
+        }
+      })
+      this.colors.choices
     } else {
       const count = this.count.val() * 1
       let colors = this.colors.val()[0].values
@@ -49,9 +80,7 @@ class Choropleth extends Container {
     return modified
   }
   btnHdlr(event) {
-    if ($(event.target).hasClass('apply')) {
-      this.trigger('change', this)
-    }
+    this.trigger('change', this)
   }
   appendCollapsible(title, content, css) {
     const collapsible = new Collapsible({
@@ -83,8 +112,7 @@ class Choropleth extends Container {
     return radio
   }
   colorChoices(event) {
-      console.warn(0, event.val());
-      const choices = []
+    const choices = []
     event.val().forEach(colorSchemes => {
       console.warn(1, colorSchemes);
       colorSchemes.values.forEach(colorScheme => {

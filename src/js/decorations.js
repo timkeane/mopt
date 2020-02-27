@@ -1,6 +1,6 @@
+import soda from './soda'
+
 const decorations = {
-  extendFeature() {
-  },
   getCount() {
     //todo break loop
     let count = 0
@@ -11,16 +11,22 @@ const decorations = {
     })
     return count
   },
+  getZip() {
+    return this.get('postalcode')
+  },
   getName() {
+    return `${this.getZip()} ${this.getPo()}`
+  },
+  getPo() {
     const boro = this.get('borough')
-    let po = this.get('po_name')
-    po = boro === 'Queens' ? `${po}, ${boro}` : po
-    return `${this.get('postalcode')} ${po}`
+    const po = this.get('po_name')
+    return boro === 'Queens' ? `${po}, ${boro}` : po
+
   },
   html() {
     return $('<div class="facility"></div>')
-      .append(`<h3 class="name notranslate"><span>ZIP Code: </span>${this.getName()}</h3>`)
-      .append(`<div class="evict">${this.getCount()}<span> total evictions</span></div>`)
+      .append(`<h3 class="name notranslate">${this.getName()}</h3>`)
+      .append(`<div>${this.getCount()} total ${soda[$('#dataset').val()].name}</div>`)
   },
   row() {
     return $('<tr class="lst-it"></tr>')

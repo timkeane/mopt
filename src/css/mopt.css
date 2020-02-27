@@ -62,6 +62,9 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
 }
+.pop>.content {
+  width: 250px;
+}
 @media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
   #tabs>.btns {
     display: table;
@@ -74,17 +77,14 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
   width: 100%;  
 }
 #filters .choro .apply {
-  display: inline-block;
   border: none;
   background-color: #efefef;
   color: #000;
   border: 1px solid #ddd;
-}
-.choro .apply, .choro .cancel {
   padding-left: 10px;
   padding-right: 10px;
-  margin-right: 5px;
   min-width: 100px;
+  float: right;
 }
 .clps {
   margin-bottom: 3px;

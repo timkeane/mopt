@@ -38,7 +38,12 @@ class App extends FinderApp {
     this.zips = zips
     this.updateStats(zips, CLASSIFY_METHOD, COLORS)
     $('#filters .apply').remove()
-    this.choropleth = new Choropleth({})
+    this.choropleth = new Choropleth({
+      count: 7,
+      method: CLASSIFY_METHOD,
+      colorType: 'divergent',
+      colors: COLORS
+    })
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
     this.addChoices()
