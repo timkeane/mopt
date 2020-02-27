@@ -3,20 +3,33 @@ import Collapsible from 'nyc-lib/nyc/Collapsible'
 import Container from 'nyc-lib/nyc/Container'
 
 class Choropleth extends Container {
-  constructor() {
-    super('<div class="choro"></div>')
+  constructor(options) {
+    super(Choropleth.HTML)
     this.method = this.choicesFromKeys(Choropleth.METHODS, 'method', 'mthd')
     this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'clr-sch')
-    this.color = this.choicesFromKeys({}, 'color', 'clr')
+    this.colors = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
     this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch')
-    this.colorClps = this.appendCollapsible('Color', this.color.getContainer(), 'clr')
+    this.colorsClps = this.appendCollapsible('Color', this.colors.getContainer(), 'clr')
+    this.count = this.find('select.count')
     this.apply = $('<button class="btn rad-all apply">Apply</button>')
     this.cancel = $('<button class="btn rad-all cancel">Cancel</button>')
     this.getContainer().append(this.apply).append(this.cancel)
     this.colorType.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
     this.cancel.click($.proxy(this.btnHdlr, this))
+    this.val(options)
+  }
+  val(options) {
+    if (options) {
+      // return this.val()
+    } else {
+      return {
+        count: this.count.val() * 1,
+        method: this.method.val()[0].values[0],
+        colors: this.colors.val()[0].values
+      }
+    }
   }
   btnHdlr(event) {
     if ($(event.target).hasClass('apply')) {
@@ -67,9 +80,9 @@ class Choropleth extends Container {
         choices.push({name: 'colors', label, values: colorScheme})
       })
     })
-    this.color.setChoices(choices)
-    if (!this.colorClps.find('.content').is(':visible')){
-      this.colorClps.toggle()
+    this.colors.setChoices(choices)
+    if (!this.colorsClps.find('.content').is(':visible')){
+      this.colorsClps.toggle()
     }
   }
 }
@@ -95,5 +108,15 @@ Choropleth.COLORS = {
 }
 Choropleth.LIMITS = [2, 7]
 
+Choropleth.HTML = `<div class="choro">
+  <select class="btn rad-all count">
+    <option value="7">7 classifications</option>
+    <option value="6">6 classifications</option>
+    <option value="5">5 classifications</option>
+    <option value="4">4 classifications</option>
+    <option value="3">3 classifications</option>
+    <option value="2">2 classifications</option>
+  </select>
+</div>`
 
 export default Choropleth

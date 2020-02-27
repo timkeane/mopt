@@ -36,14 +36,19 @@ class App extends FinderApp {
     })
     $('#banner').addClass('geostats-legend-title')
     this.zips = zips
-    this.updateStats(zips)
-    this.choropleth = new Choropleth()
+    this.updateStats(zips, CLASSIFY_METHOD, COLORS)
     $('#filters .apply').remove()
+    this.choropleth = new Choropleth({})
+    this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
-    this.adjustPager()
     this.addChoices()
+    this.adjustPager()
     this.zoomFull()
-    this.legend()
+  }
+  symbology(choropleth) {
+    const values = choropleth.val()
+    console.warn(values)
+    this.updateStats(this.zips, values.method, values.colors)
   }
   addChoices() {
     const select = $('<select id="dataset" class="btn rad-all"></select>')
@@ -60,7 +65,9 @@ class App extends FinderApp {
   }
   legend() {
     const legend = $(this.stats.getHtmlLegend()).click($.proxy(this.calssify, this))
-    legend.find('.geostats-legend-title').html(soda[$('#dataset').val()].name)
+    const dataset = $('#dataset').val()
+    const title = dataset ? soda[$('#dataset').val()].name :soda.EVICTION.name
+    legend.find('.geostats-legend-title').html(title)
     $('div.geostats-legend').remove()
     $(this.map.getTargetElement()).append(legend)
   }
@@ -103,10 +110,7 @@ class App extends FinderApp {
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
-        this.updateStats(this.zips)
-        this.legend()
-        this.layer.setSource(new Source())
-        this.layer.setSource(this.source)
+        this.updateStats(this.zips, this.stats.__colors, this.stats.__method)
         this.zoomFull()
         this.sorted = {Name: false, Count: true}
         this.sort('Count')
@@ -120,7 +124,7 @@ class App extends FinderApp {
     this.layer.setOpacity(.5)
     super.ready(this.sort('Count'))
   }
-  updateStats(zips) {
+  updateStats(zips, method, colors) {
     const counts = []
     zips.forEach(zip => {
       let z = zip.zip
@@ -132,10 +136,13 @@ class App extends FinderApp {
       }
     })
     this.stats = new geostats(counts)
-    this.stats.setColors(COLORS)
-    console.warn(CLASSIFY_METHOD,this.stats);
-    
-    this.buckets = this.stats[CLASSIFY_METHOD](COLORS.length)
+    this.stats.__colors = colors
+    this.stats.__method = method
+    this.stats.setColors(colors)
+    this.buckets = this.stats[method](colors.length)
+    this.legend()
+    this.layer.setSource(new Source())
+    this.layer.setSource(this.source)
   }
 }
 

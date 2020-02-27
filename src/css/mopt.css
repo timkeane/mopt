@@ -68,7 +68,10 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
 }
 
 /* choropleth.css */
-
+.choro select.count {
+  margin-bottom: 3px;
+  width: 100%;  
+}
 #filters .choro .apply {
   display: inline-block;
   border: none;
@@ -79,7 +82,7 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
 .choro .apply, .choro .cancel {
   padding-left: 10px;
   padding-right: 10px;
-  margin: 5px;
+  margin-right: 5px;
   min-width: 100px;
 }
 .clps {
