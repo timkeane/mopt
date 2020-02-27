@@ -11,6 +11,7 @@ import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
 import geostats from 'geostats'
 import Choropleth from './Choropleth'
+import Papa from 'papaparse'
 
 const CLASSIFY_METHOD = Choropleth.METHODS.jenks.name
 const COLORS = Choropleth.COLORS.divergent[0]
@@ -34,6 +35,7 @@ class App extends FinderApp {
       filterChoiceOptions: [],
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
+    this.loadDemographics()
     $('#banner').addClass('geostats-legend-title')
     this.zips = zips
     this.updateStats(zips, CLASSIFY_METHOD, COLORS)
@@ -49,6 +51,13 @@ class App extends FinderApp {
     this.addChoices()
     this.adjustPager()
     this.zoomFull()
+  }
+  loadDemographics() {
+    fetch('./data/demographics.csv').then(response => {
+      response.text().then(csv => {
+        this.demographics = Papa.parse(csv, {header: true}).data
+      })
+    })
   }
   symbology(choropleth) {
     const values = choropleth.val()
