@@ -110,7 +110,7 @@ class App extends FinderApp {
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
-        this.updateStats(this.zips, this.stats.__colors, this.stats.__method)
+        this.updateStats(this.zips, this.stats.__method, this.stats.__colors)
         this.zoomFull()
         this.sorted = {Name: false, Count: true}
         this.sort('Count')

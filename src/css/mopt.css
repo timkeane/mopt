@@ -22,6 +22,7 @@ table.list thead td span:last-of-type {
 table.list td {
   border: 1px solid black;
   padding: 3px;
+  width: 50%;
 }
 table.list thead td:first-of-type {
   border-right: 1px solid white;

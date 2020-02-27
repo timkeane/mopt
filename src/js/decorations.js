@@ -12,7 +12,10 @@ const decorations = {
     return count
   },
   getName() {
-    return this.get('postalcode')
+    const boro = this.get('borough')
+    let po = this.get('po_name')
+    po = boro === 'Queens' ? `${po}, ${boro}` : po
+    return `${this.get('postalcode')} ${po}`
   },
   html() {
     return $('<div class="facility"></div>')
