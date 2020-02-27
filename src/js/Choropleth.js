@@ -24,12 +24,29 @@ class Choropleth extends Container {
     if (options) {
       // return this.val()
     } else {
+      const count = this.count.val() * 1
+      let colors = this.colors.val()[0].values
+      colors = this.resizeColors(colors, count)
       return {
-        count: this.count.val() * 1,
+        count,
         method: this.method.val()[0].values[0],
-        colors: this.colors.val()[0].values
+        colors
       }
     }
+  }
+  resizeColors(original, size) {
+    const modified = []
+    original.forEach(element => {
+      modified.push(element)
+    })
+    while (modified.length > size) {
+      console.warn(modified.length, size)
+      const mid = Math.floor((modified.length - 1) / 2)
+      console.warn(mid)
+      modified.splice(mid, 1)
+      console.warn(modified)
+    }
+    return modified
   }
   btnHdlr(event) {
     if ($(event.target).hasClass('apply')) {
