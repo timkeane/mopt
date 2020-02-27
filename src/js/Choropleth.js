@@ -10,7 +10,7 @@ class Choropleth extends Container {
     this.color = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
     this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch')
-    this.appendCollapsible('Color', this.color.getContainer(), 'clr')
+    this.colorClps = this.appendCollapsible('Color', this.color.getContainer(), 'clr')
     this.apply = $('<button class="btn rad-all apply">Apply</button>')
     this.cancel = $('<button class="btn rad-all cancel">Cancel</button>')
     this.getContainer().append(this.apply).append(this.cancel)
@@ -28,7 +28,7 @@ class Choropleth extends Container {
       target: $(`<div class="${css}"></div>`),
       title,
       content,
-      collapsed: true
+      collapsed: title === 'Color'
     })
     this.getContainer().append(collapsible.getContainer())
     return collapsible
@@ -53,8 +53,9 @@ class Choropleth extends Container {
     return radio
   }
   colorChoices(event) {
-    const choices = []
-    event.choices.forEach(colorSchemes => {
+      console.warn(0, event.val());
+      const choices = []
+    event.val().forEach(colorSchemes => {
       console.warn(1, colorSchemes);
       colorSchemes.values.forEach(colorScheme => {
         const label = $('<div class="clr">&nbsp;</div>')
@@ -67,6 +68,9 @@ class Choropleth extends Container {
       })
     })
     this.color.setChoices(choices)
+    if (!this.colorClps.find('.content').is(':visible')){
+      this.colorClps.toggle()
+    }
   }
 }
 
@@ -90,5 +94,6 @@ Choropleth.COLORS = {
   ]
 }
 Choropleth.LIMITS = [2, 7]
+
 
 export default Choropleth

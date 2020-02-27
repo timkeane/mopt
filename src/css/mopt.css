@@ -61,14 +61,26 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
 }
-#tabs>.btns {
-  display: none;
+@media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
+  #tabs>.btns {
+    display: table;
+  }
 }
-.tabs .container {
-  height: 100%;
-}
-#filters button.apply {
+
+/* choropleth.css */
+
+#filters .choro .apply {
   display: inline-block;
+  border: none;
+  background-color: #efefef;
+  color: #000;
+  border: 1px solid #ddd;
+}
+.choro .apply, .choro .cancel {
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: 5px;
+  min-width: 100px;
 }
 .clps {
   margin-bottom: 3px;
@@ -81,9 +93,4 @@ label div.clr div {
   border: 1px solid white;
   opacity: .5;
   margin-top: 7px;
-}
-@media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
-  #tabs>.btns {
-    display: table;
-  }
 }
