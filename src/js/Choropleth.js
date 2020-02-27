@@ -16,22 +16,29 @@ class Choropleth extends Container {
     this.getContainer().append(this.apply)
     this.colorType.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
-    this.count.click($.proxy(this.adjustColors, this))
+    this.count.change($.proxy(this.adjustColors, this))
     this.val(options)
   }
   adjustColors() {
     const size = $(this.count).val()
-    const choices = this.colors.choices
-    choices.forEach(choice => {
+    const colorType = this.colorType.val()[0].label
+    const colors = Choropleth.COLORS[colorType]
+    const inputs = this.colors.inputs
+    const choices = []
+    colors.forEach((color, i) => {
       const label = $('<div class="clr">&nbsp;</div>')
-      const values = this.resizeColors(choice.values, size)
+      const values = this.resizeColors(color, size)
+      const input = $(inputs.get(i))
       values.forEach(color => {
         label.append(`<div style="background-color:${color}"></div>`)
       })
-      choice.label = label
-      choice.values = values
+      choices.push({
+        label,
+        name: input.attr('name'),
+        values,
+        checked: input.is(':checked')
+        })
     })
-    console.warn(choices)
     this.colors.setChoices(choices)
   }
   val(options) {
@@ -71,11 +78,8 @@ class Choropleth extends Container {
       modified.push(element)
     })
     while (modified.length > size) {
-      console.warn(modified.length, size)
       const mid = Math.floor((modified.length - 1) / 2)
-      console.warn(mid)
       modified.splice(mid, 1)
-      console.warn(modified)
     }
     return modified
   }
@@ -114,12 +118,9 @@ class Choropleth extends Container {
   colorChoices(event) {
     const choices = []
     event.val().forEach(colorSchemes => {
-      console.warn(1, colorSchemes);
       colorSchemes.values.forEach(colorScheme => {
         const label = $('<div class="clr">&nbsp;</div>')
-        console.warn(2,colorScheme);
         colorScheme.forEach(color => {
-          console.warn(3,color);
           label.append(`<div style="background-color:${color}"></div>`)
         })
         choices.push({name: 'colors', label, values: colorScheme})

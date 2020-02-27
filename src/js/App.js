@@ -52,7 +52,6 @@ class App extends FinderApp {
   }
   symbology(choropleth) {
     const values = choropleth.val()
-    console.warn(values)
     this.updateStats(this.zips, values.method, values.colors)
   }
   addChoices() {
@@ -62,11 +61,6 @@ class App extends FinderApp {
       select.append(`<option value="${key}">${soda[key].name}</option>`)
     })
     $('#facilities').prepend(select)
-  }
-  calssify() {
-    this.choropleth.define().then(result => {
-      console.warn(result, this.choropleth)
-    })
   }
   legend() {
     const legend = $(this.stats.getHtmlLegend()).click($.proxy(this.calssify, this))
