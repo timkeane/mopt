@@ -4,21 +4,21 @@ const decorations = {
   getCount() {
     //todo break loop
     let count = 0
-    this.app.zips.forEach(zip => {
+    this.app.zips.some(zip => {
       const featureZip = this.get('ZIP')
       const normalizeBy = this.app.normalizeBy
-      if (`${zip.zip}` === `${featureZip}`) {
+      if (zip.zip === featureZip) {
         if (normalizeBy !== 'none') {
           const demoZip = this.app.demographics[featureZip]
           if (demoZip) {
-            console.warn(featureZip)
-            const norm = demoZip[normalizeBy]
-            count = 1 * Math.toFixed(zip.count * 1 / norm, 2)
+            const norm = demoZip[normalizeBy] * 100
+            count = (zip.count / norm).toFixed(2) * 1
+            console.warn(count)
           }
-          
         } else {
           count = zip.count * 1
         }
+        return true
       }
     })
     return count

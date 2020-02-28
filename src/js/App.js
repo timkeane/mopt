@@ -78,7 +78,7 @@ class App extends FinderApp {
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {
       response.text().then(csv => {
-        this.demographics = Papa.parse(csv, {header: true}).data
+        const demographics = Papa.parse(csv, {header: true}).data
         demographics.forEach(demo => {
           this.demographics[demo.ZIP] = demo
         })
