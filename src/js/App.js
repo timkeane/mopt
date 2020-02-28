@@ -54,16 +54,20 @@ class App extends FinderApp {
     })
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
+    this.demographics = {}
     this.addChoices()
     this.adjustPager()
     this.addNormal()
     this.zoomFull()
   }
   normalize() {
-
+    this.normalizeBy = $('#normal').val()
+    if (this.normalizeBy !== 'none') {
+      this.updateStats(this.zips, this.stats.__method, this.stats.__colors)
+    }
   }
   addNormal() {
-    const normal = $('<select id="normal"><option val="none">Not normalized</option></select>')
+    const normal = $('<select id="normal" class="btn rad-all"><option val="0">Not normalized</option></select>')
     NORMAL.forEach(norm => {
       normal.append(`<option value="${norm.col}">${norm.name}</option>`)
     })
@@ -73,7 +77,10 @@ class App extends FinderApp {
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {
       response.text().then(csv => {
-        this.demographics = Papa.parse(csv, {header: true}).data
+        const demographics = Papa.parse(csv, {header: true}).data
+        demographics.forEach(demo => {
+          this.demographics[demo.ZIP] = demo
+        })
       })
     })
   }

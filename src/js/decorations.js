@@ -5,8 +5,15 @@ const decorations = {
     //todo break loop
     let count = 0
     this.app.zips.forEach(zip => {
-      if (zip.zip === this.get('ZIP')) {
-        count = zip.count * 1
+      const featureZip = this.get('ZIP')
+      const normalizeBy = this.app.normalizeBy
+      if (zip.zip === featureZip) {
+        if (normalizeBy !== 'none') {
+          const norm = this.app.democraphics[featureZip][normalizeBy]
+          count = 1 * Math.toFixed(zip.count * 1 / norm, 2)
+        } else {
+          count = zip.count * 1
+        }
       }
     })
     return count
