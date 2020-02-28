@@ -25,7 +25,7 @@ class App extends FinderApp {
       },
       facilityUrl: 'data/zip.json',
       facilityFormat: new GeoJson({
-        dataProjection: 'EPSG:4326',
+        dataProjection: 'EPSG:2263',
         featureProjection: 'EPSG:3857'
       }),
       facilityTabTitle: 'Data',

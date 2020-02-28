@@ -5,23 +5,20 @@ const decorations = {
     //todo break loop
     let count = 0
     this.app.zips.forEach(zip => {
-      if (zip.zip === this.get('postalcode')) {
+      if (zip.zip === this.get('ZIP')) {
         count = zip.count * 1
       }
     })
     return count
   },
   getZip() {
-    return this.get('postalcode')
+    return this.get('ZIP')
   },
   getName() {
     return `${this.getZip()} ${this.getPo()}`
   },
   getPo() {
-    const boro = this.get('borough')
-    const po = this.get('po_name')
-    return boro === 'Queens' ? `${po}, ${boro}` : po
-
+    return this.get('PO')
   },
   html() {
     return $('<div class="facility"></div>')
