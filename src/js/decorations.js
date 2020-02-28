@@ -2,22 +2,10 @@ import soda from './soda'
 
 const decorations = {
   getCount() {
-    //todo break loop
     let count = 0
     this.app.zips.some(zip => {
-      const featureZip = this.get('ZIP')
-      const normalizeBy = this.app.normalizeBy
-      if (zip.zip === featureZip) {
-        if (normalizeBy !== 'none') {
-          const demoZip = this.app.demographics[featureZip]
-          if (demoZip) {
-            const norm = demoZip[normalizeBy] * 100
-            count = (zip.count / norm).toFixed(2) * 1
-            console.warn(count)
-          }
-        } else {
+      if (zip.zip === this.get('ZIP')) {
           count = zip.count * 1
-        }
         return true
       }
     })

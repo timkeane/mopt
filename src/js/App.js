@@ -55,15 +55,13 @@ class App extends FinderApp {
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
     this.demographics = {}
-    this.normalizeBy = 'none'
+    this.addNormal()
     this.addChoices()
     this.adjustPager()
-    this.addNormal()
     this.zoomFull()
   }
   normalize() {
-    this.normalizeBy = $('#normal').val()
-    if (this.normalizeBy !== 'none') {
+    if ($('#normal').val() !== 'none') {
       this.updateStats(this.zips, this.stats.__method, this.stats.__colors)
     }
   }
@@ -160,13 +158,27 @@ class App extends FinderApp {
   }
   updateStats(zips, method, colors) {
     const counts = []
+    const normalize = $('#normal').val()
     zips.forEach(zip => {
       let z = zip.zip
       //DOB Complaints missing a lot of zips
       if (z && z.trim().length) {
         z = z.trim()
         zip.zip = z
-        if (z) counts.push(zip.count * 1)
+        if (z) {
+          console.warn('=============',normalize);
+          
+          if (normalize !== 'none') {
+            const demoZip = this.demographics[z]
+            if (demoZip) {
+              const norm = demoZip[normalize] * 100
+              count = (zip.count / norm).toFixed(2) * 1
+              console.warn(count)
+            }
+          } else {
+            counts.push(zip.count * 1)
+          }
+        }
       }
     })
     this.stats = new geostats(counts)
