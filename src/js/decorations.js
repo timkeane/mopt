@@ -5,11 +5,11 @@ const decorations = {
     let count = 0
     this.app.zips.some(zip => {
       if (zip.zip === this.get('ZIP')) {
-          count = zip.count * 1
+        count = zip.normal ? (zip.normal).toFixed(2) : zip.count
         return true
       }
     })
-    return count
+    return count * 1
   },
   getZip() {
     return this.get('ZIP')

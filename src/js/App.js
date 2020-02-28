@@ -55,7 +55,6 @@ class App extends FinderApp {
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
     this.demographics = {}
-    this.addNormal()
     this.addChoices()
     this.adjustPager()
     this.zoomFull()
@@ -66,7 +65,7 @@ class App extends FinderApp {
     }
   }
   addNormal() {
-    const normal = $('<select id="normal" class="btn rad-all"><option val="0">Not normalized</option></select>')
+    const normal = $('<select id="normal" class="btn rad-all"><option value="none">Not normalized</option></select>')
     NORMAL.forEach(norm => {
       normal.append(`<option value="${norm.col}">${norm.name}</option>`)
     })
@@ -94,6 +93,7 @@ class App extends FinderApp {
       select.append(`<option value="${key}">${soda[key].name}</option>`)
     })
     $('#facilities').prepend(select)
+    this.addNormal()
   }
   legend() {
     const legend = $(this.stats.getHtmlLegend()).click($.proxy(this.calssify, this))
@@ -157,6 +157,7 @@ class App extends FinderApp {
     super.ready(this.sort('Count'))
   }
   updateStats(zips, method, colors) {
+    console.warn(zips);
     const counts = []
     const normalize = $('#normal').val()
     zips.forEach(zip => {
@@ -166,21 +167,25 @@ class App extends FinderApp {
         z = z.trim()
         zip.zip = z
         if (z) {
-          console.warn('=============',normalize);
-          
-          if (normalize !== 'none') {
+          if (normalize && normalize !== 'none') {
             const demoZip = this.demographics[z]
             if (demoZip) {
-              const norm = demoZip[normalize] * 100
-              count = (zip.count / norm).toFixed(2) * 1
-              console.warn(count)
+              const norm = demoZip[normalize]
+              const c =  zip.count / norm
+              console.warn(`normalized by ${normalize}`, zip, zip.count / norm);
+              counts.push(c)
+              zip.normal = c
             }
           } else {
+            console.warn('not normalized', zip, zip.count * 1);
             counts.push(zip.count * 1)
+            zip.normal = null
           }
         }
       }
     })
+    console.warn(counts);
+
     this.stats = new geostats(counts)
     this.stats.__colors = colors
     this.stats.__method = method

@@ -62,6 +62,9 @@ div.geostats-legend, div.geostats-legend div.geostats-legend-title {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
 }
+#normal {
+  display: none;
+}
 .pop>.content {
   width: 250px;
 }
