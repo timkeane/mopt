@@ -7,10 +7,15 @@ const decorations = {
     this.app.zips.forEach(zip => {
       const featureZip = this.get('ZIP')
       const normalizeBy = this.app.normalizeBy
-      if (zip.zip === featureZip) {
+      if (`${zip.zip}` === `${featureZip}`) {
         if (normalizeBy !== 'none') {
-          const norm = this.app.demographics[featureZip][normalizeBy]
-          count = 1 * Math.toFixed(zip.count * 1 / norm, 2)
+          const demoZip = this.app.demographics[featureZip]
+          if (demoZip) {
+            console.warn(featureZip)
+            const norm = demoZip[normalizeBy]
+            count = 1 * Math.toFixed(zip.count * 1 / norm, 2)
+          }
+          
         } else {
           count = zip.count * 1
         }
