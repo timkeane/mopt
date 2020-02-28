@@ -55,6 +55,7 @@ class App extends FinderApp {
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
     this.demographics = {}
+    this.normalizeBy = 'none'
     this.addChoices()
     this.adjustPager()
     this.addNormal()
@@ -77,7 +78,7 @@ class App extends FinderApp {
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {
       response.text().then(csv => {
-        const demographics = Papa.parse(csv, {header: true}).data
+        this.demographics = Papa.parse(csv, {header: true}).data
         demographics.forEach(demo => {
           this.demographics[demo.ZIP] = demo
         })

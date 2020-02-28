@@ -9,7 +9,7 @@ const decorations = {
       const normalizeBy = this.app.normalizeBy
       if (zip.zip === featureZip) {
         if (normalizeBy !== 'none') {
-          const norm = this.app.democraphics[featureZip][normalizeBy]
+          const norm = this.app.demographics[featureZip][normalizeBy]
           count = 1 * Math.toFixed(zip.count * 1 / norm, 2)
         } else {
           count = zip.count * 1
