@@ -15,6 +15,12 @@ import Papa from 'papaparse'
 
 const CLASSIFY_METHOD = Choropleth.METHODS.jenks.name
 const COLORS = Choropleth.COLORS.divergent[0]
+const NORMAL = [
+  {col: 'POP', name: 'Total population'},
+  {col: 'OWN_OCC', name: 'Total owner occupied housing units'},
+  {col: 'RENT_OCC', name: 'Total renter occupied housing units'},
+  {col: 'UNITS', name: 'Total housing units'}
+]
 
 class App extends FinderApp {
   constructor(zips) {
@@ -50,7 +56,19 @@ class App extends FinderApp {
     $('#filters').append(this.choropleth.getContainer())
     this.addChoices()
     this.adjustPager()
+    this.addNormal()
     this.zoomFull()
+  }
+  normalize() {
+
+  }
+  addNormal() {
+    const normal = $('<select id="normal"><option val="none">Not normalized</option></select>')
+    NORMAL.forEach(norm => {
+      normal.append(`<option value="${norm.col}">${norm.name}</option>`)
+    })
+    normal.insertAfter($('#dataset'))
+    normal.change($.proxy(this.normalize, this))
   }
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {

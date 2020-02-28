@@ -58,7 +58,7 @@ div.geostats-legend div.geostats-legend-block {
 div.geostats-legend, div.geostats-legend div.geostats-legend-title {
   display: block;
 }
-#dataset {
+#dataset, #normal {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
 }
