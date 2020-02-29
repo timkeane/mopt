@@ -8,7 +8,7 @@ const style = () => {
     const buckets = feature.app.buckets || []
     const count = feature.getCount() * 1
     let color = 'rgba(0,0,0,0)'
-    stats.colors.forEach((clr, i) => {
+    stats.__colors.forEach((clr, i) => {
       const c = i + 1
       if (c === buckets.length) {
         if (count >= buckets[i] && count <= buckets[buckets.length - 1]) {

@@ -9,11 +9,11 @@ import decorations from './decorations'
 import facilityStyle from './facility-style'
 import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
-import geostats from 'geostats'
+import Stats from './Stats'
 import Choropleth from './Choropleth'
 import Papa from 'papaparse'
 
-const CLASSIFY_METHOD = Choropleth.METHODS.jenks.name
+const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
 const COLORS = Choropleth.COLORS.divergent[0]
 const NORMAL = [
   {col: 'POP', name: 'Total population'},
@@ -44,14 +44,14 @@ class App extends FinderApp {
     this.loadDemographics()
     $('#banner').addClass('geostats-legend-title')
     this.zips = zips
-    this.updateStats(zips, CLASSIFY_METHOD, COLORS)
-    $('#filters .apply').remove()
     this.choropleth = new Choropleth({
       count: 7,
       method: CLASSIFY_METHOD,
       colorType: 'divergent',
       colors: COLORS
     })
+    this.updateStats(zips, CLASSIFY_METHOD, COLORS)
+    $('#filters .apply').remove()
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
     this.demographics = {}
@@ -96,11 +96,10 @@ class App extends FinderApp {
     this.addNormal()
   }
   legend() {
-    const legend = $(this.stats.getHtmlLegend()).click($.proxy(this.calssify, this))
     const dataset = $('#dataset').val()
     const title = dataset ? soda[$('#dataset').val()].name :soda.EVICTION.name
-    legend.find('.geostats-legend-title').html(title)
-    $('div.geostats-legend').remove()
+    const legend = $(this.choropleth.legend(title, this.buckets, this.stats.__colors))
+    $('div.leg').remove()
     $(this.map.getTargetElement()).append(legend)
   }
   adjustPager() {
@@ -186,10 +185,10 @@ class App extends FinderApp {
     })
     console.warn(counts);
 
-    this.stats = new geostats(counts)
+    this.stats = new Stats(counts)
     this.stats.__colors = colors
     this.stats.__method = method
-    this.stats.setColors(colors)
+    // this.stats.setColors(colors)
     this.buckets = this.stats[method](colors.length)
     this.legend()
     this.layer.setSource(new Source())

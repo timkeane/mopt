@@ -30,33 +30,29 @@ table.list thead td:first-of-type {
 .lst-it:nth-child(even) {
   background-color: var(--color-medium);
 }
-div.geostats-legend {
-  width: 150px;
+div.leg {
   position: absolute;
   right: 0;
   bottom: 0;
   z-index: 2000;
   background-color: rgba(255,255,255,.5);
-  padding :5px;
+  padding: 5px;
 }
-div.geostats-legend-title {
+div.leg h3 {
+  max-width: 150px;
   font-weight: bold;
+  margin: 0;
 }
-div.geostats-legend div {
-  display: table-row;
-  margin-bottom: 3px;
+div.leg table {
+  border-collapse: collapse;
 }
-div.geostats-legend div.geostats-legend-block {
-  display: table-cell;
-  height: 14px;
+div.leg .lbl {
+  text-align: right;
+}
+div.leg .sym {
   opacity: .5;
-  border: 2px solid white;
+  border: 2px solid rgba(255,255,255,.5);
   width: 16px;
-  margin-right: 5px;
-  float: left;
-}
-div.geostats-legend, div.geostats-legend div.geostats-legend-title {
-  display: block;
 }
 #dataset, #normal {
   width: calc(100% - 10px);

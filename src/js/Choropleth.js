@@ -1,11 +1,12 @@
 import Choice from 'nyc-lib/nyc/Choice'
 import Collapsible from 'nyc-lib/nyc/Collapsible'
 import Container from 'nyc-lib/nyc/Container'
+import Stats from './Stats'
 
 class Choropleth extends Container {
   constructor(options) {
     super(Choropleth.HTML)
-    this.method = this.choicesFromKeys(Choropleth.METHODS, 'method', 'mthd')
+    this.method = this.choicesFromKeys(Stats.METHODS, 'method', 'mthd')
     this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'clr-sch')
     this.colors = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
@@ -131,15 +132,27 @@ class Choropleth extends Container {
       this.colorsClps.toggle()
     }
   }
+  legItem(color, min, max) {
+    max = max || ''
+    return $(`<tr class="it">
+      <td class="sym" style="background-color:${color}">&nbsp;</td>
+      <td class="lbl">${min}</td>
+      <td class="sep">-</td>
+      <td class="lbl">${max}</td>
+    </tr>`)
+  }
+  legend(title, classifications, colors) {
+    const legend = $(Choropleth.LEGEND_HTML)
+    legend.find('h3').html(title)
+    classifications.forEach((cls, i) => {
+      if (i < classifications.length - 1) {
+        legend.find('table').append(this.legItem(colors[i], cls, classifications[i + 1]))
+      }
+    })
+    return legend
+  }
 }
 
-Choropleth.METHODS = {
-  eqInterval: {label: 'Equal interval', name: 'getClassEqInterval'},
-  stdDeviation: {label: 'Standard deviation', name: 'getClassStdDeviation'},
-  jenks: {label: 'Jenks natural breaks', name: 'getClassJenks'},
-  quantile: {label: 'Quantile breaks', name: 'getClassQuantile'},
-  arithmeticProgression: {label: 'Arithmetic progression', name: 'getClassArithmeticProgression'}
-}
 Choropleth.COLORS = {
   divergent: [
     ['#762a83', '#af8dc3', '#e7d4e8', '#f7f7f7', '#d9f0d3', '#7fbf7b', '#1b7837'],
@@ -150,7 +163,8 @@ Choropleth.COLORS = {
     ['#feedde', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#8c2d04'],
     ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#99000d'],
     ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026']     
-  ]
+  ],
+  nodata: '#000'
 }
 Choropleth.LIMITS = [2, 7]
 
@@ -163,6 +177,11 @@ Choropleth.HTML = `<div class="choro">
     <option value="3">3 classifications</option>
     <option value="2">2 classifications</option>
   </select>
+</div>`
+
+Choropleth.LEGEND_HTML = `<div class="leg">
+  <h3></h3>
+  <table></table>
 </div>`
 
 export default Choropleth
