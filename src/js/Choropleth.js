@@ -132,21 +132,23 @@ class Choropleth extends Container {
       this.colorsClps.toggle()
     }
   }
-  legItem(color, min, max) {
-    max = max || ''
+  legItem(color, min, max, places) {
+    places = places || 0
     return $(`<tr class="it">
       <td class="sym" style="background-color:${color}">&nbsp;</td>
-      <td class="lbl">${min}</td>
+      <td class="lbl">${min.toFixed(places)}</td>
       <td class="sep">-</td>
-      <td class="lbl">${max}</td>
+      <td class="lbl">${max.toFixed(places)}</td>
     </tr>`)
   }
-  legend(title, classifications, colors) {
+  legend(title, classifications, colors, places) {
     const legend = $(Choropleth.LEGEND_HTML)
     legend.find('h3').html(title)
     classifications.forEach((cls, i) => {
       if (i < classifications.length - 1) {
-        legend.find('table').append(this.legItem(colors[i], cls, classifications[i + 1]))
+        legend.find('table').append(
+          this.legItem(colors[i], cls, classifications[i + 1], places)
+        )
       }
     })
     return legend
@@ -163,8 +165,7 @@ Choropleth.COLORS = {
     ['#feedde', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#8c2d04'],
     ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#99000d'],
     ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026']     
-  ],
-  nodata: '#000'
+  ]
 }
 Choropleth.LIMITS = [2, 7]
 
