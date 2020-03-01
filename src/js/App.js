@@ -136,6 +136,12 @@ class App extends FinderApp {
     this.pager.reset(features)
     return features
   }
+  units() {
+    const data = soda[$('#dataset').val()].name
+    let norm = NORMAL[$('#normal').val()]
+    norm = norm ? norm.name : ''
+    return `${data} ${norm}`
+  }
   choose(event) {
     const url = soda[event.target.value].url
     fetch(url).then(response => {

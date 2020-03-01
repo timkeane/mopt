@@ -23,6 +23,20 @@ table.list td {
   border: 1px solid black;
   padding: 3px;
   width: 50%;
+  cursor: pointer;
+}
+table.list thead td {
+  border-bottom: none;
+}
+table.list tr.open {
+  background-color: black;
+}
+table.list tr.open td {
+  border-top: 1px solid white;
+}
+table.list tr.open td.name {
+  border-right: 1px solid white;
+  color: white;
 }
 table.list thead td:first-of-type {
   border-right: 1px solid white;
@@ -30,6 +44,30 @@ table.list thead td:first-of-type {
 .lst-it:nth-child(even) {
   background-color: var(--color-medium);
 }
+.lst-dtl {
+  display: none;
+}
+div.compare div.bar {
+  background-color: var(--color-dark);
+  height: 10px;
+  display: inline-block;
+}
+.tip-title {
+  padding: 3px;
+}
+.tip-title * {
+  display: inline-block;
+  margin: 0;
+}
+.pop .tip-title {
+  border-bottom: 1px solid black;
+  margin-right: 20px;
+  margin-bottom: 5px;
+}
+.list .tip-title {
+  display: none;
+}
+
 div.leg {
   position: absolute;
   right: 0;
@@ -60,9 +98,6 @@ div.leg .sym {
 }
 #normal {
   display: none;
-}
-.pop>.content {
-  width: 250px;
 }
 @media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
   #tabs>.btns {
