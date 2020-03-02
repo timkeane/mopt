@@ -181,7 +181,7 @@ class Choropleth extends Container {
         if (i === classifications.length - 2) {
           item.children().last().remove()
           item.children().last().remove()
-          $('<div class="op">&lt;</div>').insertBefore(item.children().last())
+          $('<div class="op">&gt;</div>').insertBefore(item.children().last())
         }
         items.append(item)
       }

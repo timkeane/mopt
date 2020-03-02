@@ -48,6 +48,7 @@ class Stats {
       const mid = Math.ceil(numClasses / 2) -1
       const std = ss.standardDeviation(this.data)
       const mean = this.mean()
+      classes[mid] = mean + 2 * std
       let i = 0
       while (i < mid) {
         i++
