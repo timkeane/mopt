@@ -65,11 +65,8 @@ div.leg h3 {
   font-weight: bold;
   margin: 0;
 }
-div.leg table {
-  border-collapse: collapse;
-}
-div.leg .lbl {
-  text-align: right;
+div.leg div.it div {
+  display: inline-block;
 }
 div.leg .sym {
   opacity: .5;
@@ -79,9 +76,6 @@ div.leg .sym {
 #dataset, #normal {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
-}
-#normal {
-  display: none;
 }
 @media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
   #tabs>.btns {

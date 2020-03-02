@@ -89,6 +89,9 @@ class App extends FinderApp {
     this.method = values.method
     this.colors = values.colors
     this.updateStats(this.zips)
+    if (this.isMobile()) {
+      this.tabs.open('#map')
+    }
   }
   addChoices() {
     const select = $('<select id="dataset" class="btn rad-all"></select>')

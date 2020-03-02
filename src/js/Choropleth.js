@@ -18,7 +18,34 @@ class Choropleth extends Container {
     this.colorType.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
     this.count.change($.proxy(this.adjustColors, this))
+    this.method.on('change', this.adjustCounts, this)
     this.val(options)
+  }
+  adjustCounts() {
+    const count = this.count.val()
+    const std = this.method.val()[0].values[0] === Stats.METHODS.stdDeviation.name
+    this.count.empty()
+    let i = 7
+    while (i > 1) {
+      if (std) {
+        if (i % 2) {
+          this.count.append(`<option value="${i}">${i} Classifications</options>`)
+        }
+      } else {
+        this.count.append(`<option value="${i}">${i} Classifications</options>`)
+      }
+      i--
+    }
+    if (std) {
+      if (count % 2) {
+        this.count.val(count)
+      } else {
+        this.count.val(7)
+      }
+    } else {
+      this.count.val(count)
+    }
+    this.count.trigger('change')
   }
   adjustColors() {
     const size = $(this.count).val()
@@ -64,7 +91,7 @@ class Choropleth extends Container {
       this.colors.choices
     } else {
       let colors = this.colors.val()[0].values
-      colors = this.resizeColors(colors, count)
+      colors = this.resizeColors(colors, this.count.val())
       return {
         method: this.method.val()[0].values[0],
         colors
@@ -132,21 +159,31 @@ class Choropleth extends Container {
   }
   legItem(color, min, max, places) {
     places = places || 0
-    return $(`<tr class="it">
-      <td class="sym" style="background-color:${color}">&nbsp;</td>
-      <td class="lbl">${min.toFixed(places)}</td>
-      <td class="sep">-</td>
-      <td class="lbl">${max.toFixed(places)}</td>
-    </tr>`)
+    return $(`<div class="it">
+      <div class="sym" style="background-color:${color}">&nbsp;</div>
+      <div class="gt">${min.toFixed(places)}</div>
+      <div class="to">-</div>
+      <div class="lt">${max.toFixed(places)}</div>
+    </div>`)
   }
   legend(title, classifications, colors, places) {
     const legend = $(Choropleth.LEGEND_HTML)
+    const items = legend.find('.its')
     legend.find('h3').html(title)
     classifications.forEach((cls, i) => {
       if (i < classifications.length - 1) {
-        legend.find('table').append(
-          this.legItem(colors[i], cls, classifications[i + 1], places)
-        )
+        const item = this.legItem(colors[i], cls, classifications[i + 1], places)
+        if (i === 0) {
+          $(item.children().get(1)).remove()
+          $(item.children().get(1)).remove()
+          $('<div class="op">&lt;</div>').insertBefore($(item.children().get(1)))
+        }
+        if (i === classifications.length - 2) {
+          item.children().last().remove()
+          item.children().last().remove()
+          $('<div class="op">&lt;</div>').insertBefore(item.children().last())
+        }
+        items.append(item)
       }
     })
     return legend
@@ -180,7 +217,7 @@ Choropleth.HTML = `<div class="choro">
 
 Choropleth.LEGEND_HTML = `<div class="leg">
   <h3></h3>
-  <table></table>
+  <div class="its"></div>
 </div>`
 
 export default Choropleth
