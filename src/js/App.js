@@ -15,12 +15,12 @@ import Papa from 'papaparse'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
 const COLORS = Choropleth.COLORS.divergent[0]
-const NORMAL = [
-  {col: 'POP', name: 'Total population'},
-  {col: 'OWN_OCC', name: 'Total owner occupied housing units'},
-  {col: 'RENT_OCC', name: 'Total renter occupied housing units'},
-  {col: 'UNITS', name: 'Total housing units'}
-]
+const NORMAL = {
+  POP: {name: `per ${new Number(1000).toLocaleString()} residents`, factor: 1000},
+  OWN_OCC: {name: `per ${new Number(1000).toLocaleString()} owner occupied housing units`, factor: 1000},
+  RENT_OCC: {name: `per ${new Number(1000).toLocaleString()} renter occupied housing units`, factor: 1000},
+  UNITS: {name: `per ${new Number(1000).toLocaleString()} housing units`, factor: 1000}
+}
 
 class App extends FinderApp {
   constructor(zips) {
@@ -42,7 +42,7 @@ class App extends FinderApp {
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
     this.loadDemographics()
-    $('#banner').addClass('geostats-legend-title')
+    $('#banner').addClass('leg-title')
     this.colors = COLORS
     this.method = CLASSIFY_METHOD
     this.zips = zips
@@ -52,27 +52,30 @@ class App extends FinderApp {
       colorType: 'divergent',
       colors: COLORS
     })
-    this.updateStats(zips)
-    $('#filters .apply').remove()
-    this.choropleth.on('change', this.symbology, this)
-    $('#filters').append(this.choropleth.getContainer())
     this.demographics = {}
     this.addChoices()
     this.adjustPager()
+    $('#filters .apply').remove()
+    this.updateStats(zips)
+    this.choropleth.on('change', this.symbology, this)
+    $('#filters').append(this.choropleth.getContainer())
     this.zoomFull()
   }
   normalize() {
-    if ($('#normal').val() !== 'none') {
+    const normal = $('#normal').val()
+    if (normal !== 'none') {
       this.updateStats(this.zips)
     }
   }
   addNormal() {
     const normal = $('<select id="normal" class="btn rad-all"><option value="none">Not normalized</option></select>')
-    NORMAL.forEach(norm => {
-      normal.append(`<option value="${norm.col}">${norm.name}</option>`)
+    Object.keys(NORMAL).forEach(key => {
+      const norm = 
+      normal.append(`<option value="${key}">${NORMAL[key].name}</option>`)
     })
     normal.insertAfter($('#dataset'))
     normal.change($.proxy(this.normalize, this))
+    $('<h2 class="leg-title">Evictions</h2>').insertAfter(normal)
   }
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {
@@ -104,13 +107,12 @@ class App extends FinderApp {
   }
   legend() {
     const dataset = $('#dataset').val()
-    const title = dataset ? soda[$('#dataset').val()].name :soda.EVICTION.name
-    const legend = $(this.choropleth.legend(title, this.buckets, this.colors))
+    const legend = $(this.choropleth.legend(this.units(), this.buckets, this.colors))
     $('div.leg').remove()
     $(this.map.getTargetElement()).append(legend)
   }
   adjustPager() {
-    this.sorted = {Name: false, Count: true}
+    this.sorted = {Name: false, Count: false}
     this.pager.pageSize = 50
     this.pager.list = $('<tbody></tbody>')
     $(App.LIST_HTML).append(this.pager.list).insertBefore($('div.list'))
@@ -127,16 +129,16 @@ class App extends FinderApp {
       duration: 500
     })
   }
-  sort(prop) {
+  sort(prop, descend) {
     const features = this.source.getFeatures()
     this.sorted[prop] = !this.sorted[prop]
     features.sort((f0, f1) => {
       const a = f0[`get${prop}`]()
       const b = f1[`get${prop}`]()
       if (a < b) {
-        return this.sorted[prop] ? -1 : 1
+        return descend || this.sorted[prop] ? 1 : -1
       } else if (a > b) {
-        return this.sorted[prop] ? 1 : -1
+        return descend || this.sorted[prop] ? -1 : 1
       }
       return 0
     })
@@ -144,10 +146,11 @@ class App extends FinderApp {
     return features
   }
   units() {
-    const data = soda[$('#dataset').val()].name
-    let norm = NORMAL[$('#normal').val()]
-    norm = norm ? norm.name : ''
-    return `${data} ${norm}`
+    let dataset = soda[$('#dataset').val()]
+    let units = NORMAL[$('#normal').val()]
+    dataset = dataset ? dataset.name : 'Evictions'
+    units = units ? units.name : ''
+    return `${dataset} ${units}`.trim()
   }
   choose(event) {
     const url = soda[event.target.value].url
@@ -156,9 +159,6 @@ class App extends FinderApp {
         this.zips = json
         this.updateStats(this.zips)
         this.zoomFull()
-        this.sorted = {Name: false, Count: true}
-        this.sort('Count')
-        $('.geostats-legend-title').html(soda[event.target.value].name)
       })
     }).catch(err => {
       new Dialog().ok({message: `Unable to load ${soda[event.target.value].name} from NYC OpenData`})
@@ -166,10 +166,9 @@ class App extends FinderApp {
   }
   ready(features) {
     this.layer.setOpacity(.5)
-    super.ready(this.sort('Count'))
+    super.ready(this.sort('Count', true))
   }
   updateStats(zips) {
-    console.warn(zips);
     const counts = []
     const normalize = $('#normal').val()
     zips.forEach(zip => {
@@ -182,27 +181,29 @@ class App extends FinderApp {
           if (normalize && normalize !== 'none') {
             const demoZip = this.demographics[z]
             if (demoZip) {
-              const norm = demoZip[normalize]
-              const c =  zip.count / norm
-              console.warn(`normalized by ${normalize}`, zip, zip.count / norm);
+              const norm = demoZip[normalize] * 1
+              const factor = NORMAL[normalize].factor
+              let c = 0 
+              if (norm !== 0) {
+                c = factor * zip.count / norm
+              }
               counts.push(c)
               zip.normal = c
             }
           } else {
-            console.warn('not normalized', zip, zip.count * 1);
             counts.push(zip.count * 1)
             zip.normal = null
           }
         }
       }
     })
-    console.warn(counts);
-
     this.stats = new Stats(counts)
     this.mean = this.stats.mean()
     this.median = this.stats.median()
     this.buckets = this.stats[this.method](this.colors.length)
+    this.sort('Count', true)
     this.legend()
+    $('.leg-title').html(this.units())
     this.layer.setSource(new Source())
     this.layer.setSource(this.source)
   }
@@ -212,7 +213,7 @@ App.LIST_HTML = `<table class="list">
   <thead>
     <tr>
       <td onclick="finderApp.sort(\'Name\')">ZIP Code <span>&#x21F5;</span></td>
-      <td onclick="finderApp.sort(\'Count\')"><span class="geostats-legend-title">Evictions</span> <span>&#x21F5;</span></td>
+      <td onclick="finderApp.sort(\'Count\')">Count <span>&#x21F5;</span></td>
     <tr>
   </thead>
   </table>`

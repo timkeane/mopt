@@ -73,10 +73,17 @@ div.leg .sym {
   border: 2px solid rgba(255,255,255,.5);
   width: 16px;
 }
-#dataset, #normal {
+#dataset, #normal, #facilities h2 {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
 }
+.pop h3, .list td h3 {
+  margin-top: 0;
+}
+.compare .name {
+  font-weight: bold;
+}
+
 @media only screen and (max-width : 750px), screen and (max-device-height: 350px) {
   #tabs>.btns {
     display: table;

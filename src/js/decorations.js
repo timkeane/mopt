@@ -9,7 +9,7 @@ const decorations = {
         return true
       }
     })
-    return count * 1
+    return new Number(count)
   },
   getZip() {
     return this.get('ZIP')
@@ -31,21 +31,22 @@ const decorations = {
       return 0
     })
     const large = values[0]
+    html.append(`<h3>${this.app.units()}</h3>`)
     html.append(`<div class="name">${this.getName()}</div>`)
-      .append(`<div class="bar" style="width:calc(${count * 100 / large}% - 55px);min-width:1px;"></div>`)
-      .append(`  ${count}`)
-      .append(`<div class="name">City-wide median</div>`)
-      .append(`<div class="bar" style="width:calc(${median * 100 / large}% - 55px);min-width:1px;"></div>`)
-      .append(`  ${median}`)
-      .append('<div class="name">City-wide mean</div>')
-      .append(`<div class="bar" style="width:calc(${mean * 100 / large}% - 55px);min-width:1px;"></div>`)
-      .append(`  ${new Number(mean.toFixed(2))}`)
+      .append(`<div class="bar" style="width:${count * 260 / large}px;min-width:1px;"></div>`)
+      .append(`  ${new Number(count.toFixed(2)).toLocaleString()}`)
+      .append(`<div class="lbl">City-wide median</div>`)
+      .append(`<div class="bar" style="width:${median * 260 / large}px;min-width:1px;"></div>`)
+      .append(`  ${new Number(median.toFixed(2)).toLocaleString()}`)
+      .append('<div class="lbl">City-wide mean</div>')
+      .append(`<div class="bar" style="width:${mean * 260 / large}px;min-width:1px;"></div>`)
+      .append(`  ${new Number(mean.toFixed(2)).toLocaleString()}`)
     return html
   },
   row() {
     const row1 =  $('<tr class="lst-it"></tr>')
       .append(`<td class="name notranslate">${this.getName()}</td>`)
-      .append(`<td class="count">${this.getCount()}</td>`)
+      .append(`<td class="count">${this.getCount().toLocaleString()}</td>`)
     const row2 =  $('<tr class="lst-dtl"></tr>')
       .append($(`<td colspan="2"></td>`).html(this.html()))
       row1.data('html', row2.html())
@@ -68,7 +69,7 @@ const decorations = {
   getTip() {
     return `<div class="tip-title">
       <h3>${this.getName()}</h3>
-      <div>${this.getCount()} ${this.app.units()}</div>
+      <div>${this.getCount().toLocaleString()} ${this.app.units()}</div>
     </div>`
   }
 }

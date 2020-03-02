@@ -161,9 +161,9 @@ class Choropleth extends Container {
     places = places || 0
     return $(`<div class="it">
       <div class="sym" style="background-color:${color}">&nbsp;</div>
-      <div class="gt">${min.toFixed(places)}</div>
+      <div class="gt">${new Number(min.toFixed(places)).toLocaleString()}</div>
       <div class="to">-</div>
-      <div class="lt">${max.toFixed(places)}</div>
+      <div class="lt">${new Number(max.toFixed(places)).toLocaleString()}</div>
     </div>`)
   }
   legend(title, classifications, colors, places) {
