@@ -1,6 +1,6 @@
 {
   "name": "mopt",
-  "version": "0.0.9 ",
+  "version": "0.0.10",
   "description": "mopt",
   "main": "index.js",
   "scripts": {

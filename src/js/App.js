@@ -14,7 +14,7 @@ import Choropleth from './Choropleth'
 import Papa from 'papaparse'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
-const COLORS = Choropleth.COLORS.divergent[0]
+const COLORS = Choropleth.COLORS.sequential[2]
 const NORMAL = {
   POP: {name: `per ${new Number(1000).toLocaleString()} residents`, factor: 1000},
   OWN_OCC: {name: `per ${new Number(1000).toLocaleString()} owner occupied housing units`, factor: 1000},
