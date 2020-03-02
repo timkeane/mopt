@@ -4,11 +4,10 @@ import Stroke from 'ol/style/Stroke'
 
 const style = () => {
   return (feature, resolution) => {
-    const stats = feature.app.stats
     const buckets = feature.app.buckets || []
     const count = feature.getCount() * 1
     let color = 'rgba(0,0,0,0)'
-    stats.__colors.forEach((clr, i) => {
+    feature.app.colors.forEach((clr, i) => {
       const c = i + 1
       if (c === buckets.length) {
         if (count >= buckets[i] && count <= buckets[buckets.length - 1]) {

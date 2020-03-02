@@ -20,46 +20,26 @@ const decorations = {
   getPo() {
     return this.get('PO')
   },
-  featureForCount(count) {
-    let featureForCount
-    const features = this.app.source.getFeatures()
-    features.some(feature => {
-      if (feature.getCount() === count * 1) {
-        featureForCount = feature
-        return true
-      }
-    })
-    return featureForCount
-  },
   html() {
     const html = $('<div class="compare"></div>')
-    const min = this.app.stats.min()
-    const med = this.app.stats.median()
-    const max = this.app.stats.max()
+    const median = this.app.median
+    const mean = this.app.mean
     const count = this.getCount()
-    const labels = {}
-    labels[min] = `<strong>Minimum:</strong> ${this.featureForCount(min).getName()}`
-    labels[med] = `<strong>Median:</strong> ${this.featureForCount(med).getName()}`
-    labels[max] = `<strong>Maximum:</strong> ${this.featureForCount(max).getName()}`
-    if (labels[count]) {
-      labels[count] = `<strong><em>
-        ${$($(labels[count])[0]).html()} ${this.getName()}
-      </em></strong>`
-    } else {
-      labels[count] = `<strong><em>${this.getName()}</em></strong>`
-    }
-    const bars = Object.keys(labels).sort((a, b) => {
-      if (a * 1 < b * 1) return -1
-      if (a * 1 > b * 1) return 1
+    const values = [median, mean, count].sort((a, b) => {
+      if (a * 1 < b * 1) return 1
+      if (a * 1 > b * 1) return -1
       return 0
     })
-    html.append(this.getTip())
-    bars.forEach((c, i) => {
-      const feature = this.featureForCount(c)
-      html.append(`<div class="name">${labels[c]}</div>`)
-        .append(`<div class="bar" style="width:calc(${c * 100 / max}% - 50px);min-width:1px;"></div>`)
-        .append(` ${c}`)
-    })
+    const large = values[0]
+    html.append(`<div class="name">${this.getName()}</div>`)
+      .append(`<div class="bar" style="width:calc(${count * 100 / large}% - 55px);min-width:1px;"></div>`)
+      .append(`  ${count}`)
+      .append(`<div class="name">City-wide median</div>`)
+      .append(`<div class="bar" style="width:calc(${median * 100 / large}% - 55px);min-width:1px;"></div>`)
+      .append(`  ${median}`)
+      .append('<div class="name">City-wide mean</div>')
+      .append(`<div class="bar" style="width:calc(${mean * 100 / large}% - 55px);min-width:1px;"></div>`)
+      .append(`  ${new Number(mean.toFixed(2))}`)
     return html
   },
   row() {
@@ -68,12 +48,22 @@ const decorations = {
       .append(`<td class="count">${this.getCount()}</td>`)
     const row2 =  $('<tr class="lst-dtl"></tr>')
       .append($(`<td colspan="2"></td>`).html(this.html()))
-    row1.click(event => {
+      row1.data('html', row2.html())
+      row1.click(event => {
       const target = $(event.currentTarget)
+      const html = target.data('html')
+      const colspan = target.find('td').attr('colspan')
+      target.data('html', target.html())
+      if (colspan) {
+        target.find('td').removeAttr('colspan')
+      } else {
+        target.find('td').attr('colspan', 2)
+      }
+      target.html(html)
       target.toggleClass('open')
       row2.slideToggle()
     })
-    return [row1, row2]
+    return row1
   },
   getTip() {
     return `<div class="tip-title">

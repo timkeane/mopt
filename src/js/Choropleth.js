@@ -63,11 +63,9 @@ class Choropleth extends Container {
       })
       this.colors.choices
     } else {
-      const count = this.count.val() * 1
       let colors = this.colors.val()[0].values
       colors = this.resizeColors(colors, count)
       return {
-        count,
         method: this.method.val()[0].values[0],
         colors
       }

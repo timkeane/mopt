@@ -43,24 +43,22 @@ class Stats {
     return ss.mean(this.data)
   }
   stdClasses(numClasses) {
-    const classes = new Array(numClasses + 1)
-    const mid = Math.ceil(numClasses / 2) - 1
-    const std = ss.standardDeviation(this.data)
-    const mean = this.mean()
     if (numClasses % 2) {
-      classes[mid] = mean + 2 * std
-    } else {
-      classes[mid] = mean + std
+      const classes = new Array(numClasses + 1)
+      const mid = Math.ceil(numClasses / 2) -1
+      const std = ss.standardDeviation(this.data)
+      const mean = this.mean()
+      let i = 0
+      while (i < mid) {
+        i++
+        classes[mid - i] = classes[mid] - (i * std)
+        classes[mid + i] = classes[mid] + (i * std)
+      }
+      classes[0] = this.min()
+      classes[classes.length - 1] = this.max()
+      return classes
     }
-    let i = 0
-    while (i < mid) {
-      i++
-      classes[mid - i] = classes[mid] - (i * std)
-      classes[mid + i] = classes[mid] + (i * std)
-    }
-    classes[0] = this.min()
-    classes[classes.length - 1] = this.max()
-    return classes
+    throw `Invalid argument ${numClasses}: 3, 5, 7 are the only valid arguments for 'Stats.stdClasses'`
   }
 }
 

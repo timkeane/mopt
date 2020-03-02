@@ -43,6 +43,8 @@ class App extends FinderApp {
     })
     this.loadDemographics()
     $('#banner').addClass('geostats-legend-title')
+    this.colors = COLORS
+    this.method = CLASSIFY_METHOD
     this.zips = zips
     this.choropleth = new Choropleth({
       count: 7,
@@ -50,7 +52,7 @@ class App extends FinderApp {
       colorType: 'divergent',
       colors: COLORS
     })
-    this.updateStats(zips, CLASSIFY_METHOD, COLORS)
+    this.updateStats(zips)
     $('#filters .apply').remove()
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
@@ -61,7 +63,7 @@ class App extends FinderApp {
   }
   normalize() {
     if ($('#normal').val() !== 'none') {
-      this.updateStats(this.zips, this.stats.__method, this.stats.__colors)
+      this.updateStats(this.zips)
     }
   }
   addNormal() {
@@ -84,7 +86,9 @@ class App extends FinderApp {
   }
   symbology(choropleth) {
     const values = choropleth.val()
-    this.updateStats(this.zips, values.method, values.colors)
+    this.method = values.method
+    this.colors = values.colors
+    this.updateStats(this.zips)
   }
   addChoices() {
     const select = $('<select id="dataset" class="btn rad-all"></select>')
@@ -98,7 +102,7 @@ class App extends FinderApp {
   legend() {
     const dataset = $('#dataset').val()
     const title = dataset ? soda[$('#dataset').val()].name :soda.EVICTION.name
-    const legend = $(this.choropleth.legend(title, this.buckets, this.stats.__colors))
+    const legend = $(this.choropleth.legend(title, this.buckets, this.colors))
     $('div.leg').remove()
     $(this.map.getTargetElement()).append(legend)
   }
@@ -147,7 +151,7 @@ class App extends FinderApp {
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
-        this.updateStats(this.zips, this.stats.__method, this.stats.__colors)
+        this.updateStats(this.zips)
         this.zoomFull()
         this.sorted = {Name: false, Count: true}
         this.sort('Count')
@@ -161,7 +165,7 @@ class App extends FinderApp {
     this.layer.setOpacity(.5)
     super.ready(this.sort('Count'))
   }
-  updateStats(zips, method, colors) {
+  updateStats(zips) {
     console.warn(zips);
     const counts = []
     const normalize = $('#normal').val()
@@ -192,10 +196,9 @@ class App extends FinderApp {
     console.warn(counts);
 
     this.stats = new Stats(counts)
-    this.stats.__colors = colors
-    this.stats.__method = method
-    // this.stats.setColors(colors)
-    this.buckets = this.stats[method](colors.length)
+    this.mean = this.stats.mean()
+    this.median = this.stats.median()
+    this.buckets = this.stats[this.method](this.colors.length)
     this.legend()
     this.layer.setSource(new Source())
     this.layer.setSource(this.source)
