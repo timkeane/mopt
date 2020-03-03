@@ -74,8 +74,8 @@ class Choropleth extends Container {
   }
   adjustColors() {
     const size = this.count.val()[0].values[0]
-    const colorType = this.colorType.val()[0].label
-    const colors = Choropleth.COLORS[colorType]
+    const colorType = this.colorType.val()[0].label.toLowerCase()
+    const colors = Choropleth.COLORS[colorType].values
     const inputs = this.colors.inputs
     const choices = []
     colors.forEach((color, i) => {
