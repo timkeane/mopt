@@ -14,6 +14,8 @@ import Choropleth from './Choropleth'
 import Papa from 'papaparse'
 import Choice from 'nyc-lib/nyc/Choice'
 import Collapsible from 'nyc-lib/nyc/Collapsible'
+import Dialog from 'nyc-lib/nyc/Dialog'
+import fetchTimeout from './fetchTimeout'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
 const COLORS = Choropleth.COLORS.sequential[2]
@@ -88,7 +90,7 @@ class App extends FinderApp {
     }
   }
   loadDemographics() {
-    fetch('./data/demographics.csv').then(response => {
+    fetchTimeout('./data/demographics.csv').then(response => {
       response.text().then(csv => {
         const demographics = Papa.parse(csv, {header: true}).data
         demographics.forEach(demo => {
@@ -176,15 +178,19 @@ class App extends FinderApp {
     return `${dataset} ${units}`.trim()
   }
   chooseData(event) {
-    const url = soda[this.dataset.val()[0].values[0]].url
+    const dataset = soda[this.dataset.val()[0].values[0]]
+    const url = dataset.url
     fetch(url).then(response => {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
       response.json().then(json => {
         this.zips = json
         this.updateStats(this.zips)
         this.zoomFull()
       })
     }).catch(err => {
-      new Dialog().ok({message: `Unable to load ${soda[event.target.value].name} from NYC OpenData`})
+      new Dialog().ok({message: `Unable to load <strong>${dataset.name}</strong> from NYC OpenData`})
     })
   }
   ready(features) {

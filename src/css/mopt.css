@@ -22,7 +22,6 @@ table.list thead td span:last-of-type {
 table.list td {
   border: 1px solid black;
   padding: 3px;
-  width: 50%;
   cursor: pointer;
 }
 table.list thead td {
@@ -73,9 +72,10 @@ div.leg .sym {
   border: 2px solid rgba(255,255,255,.5);
   width: 16px;
 }
-#dataset, #normal, #facilities h2 {
+#facilities h2 {
   width: calc(100% - 10px);
   margin: 5px 5px 0;
+  font-size: 18px;
 }
 .pop h3, .list td h3 {
   margin-top: 0;
