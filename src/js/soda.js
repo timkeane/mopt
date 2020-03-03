@@ -28,7 +28,7 @@ export default {
     url: 'https://data.cityofnewyork.us/resource/tb8q-a3ar.json?$select=postoce%20as%20zip,%20count(postoce)%20as%20count&$group=postoce'
   },
   CONH: {
-    name: 'Certification of No Harassment (CONH) Pilot Building List',
+    name: 'Certification of No Harassment (CONH) List',
     url: 'https://data.cityofnewyork.us/resource/bzxi-2tsw.json?$select=zipcode%20as%20zip,%20count(zipcode)%20as%20count&$group=zipcode'
   },
   SPECULATION: {

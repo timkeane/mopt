@@ -12,6 +12,8 @@ import soda from './soda'
 import Stats from './Stats'
 import Choropleth from './Choropleth'
 import Papa from 'papaparse'
+import Choice from 'nyc-lib/nyc/Choice'
+import Collapsible from 'nyc-lib/nyc/Collapsible'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
 const COLORS = Choropleth.COLORS.sequential[2]
@@ -37,45 +39,53 @@ class App extends FinderApp {
       facilityTabTitle: 'Data',
       facilityStyle: facilityStyle(),
       decorations: [decorations],
-      filterTabTitle: 'Symbology',
+      filterTabTitle: 'Visualize',
       filterChoiceOptions: [],
       geoclientUrl: 'https://maps.nyc.gov/geoclient/v1/search.json?app_key=74DF5DB1D7320A9A2&app_id=nyc-lib-example'
     })
-    this.loadDemographics()
     $('#banner').addClass('leg-title')
     this.colors = COLORS
     this.method = CLASSIFY_METHOD
     this.zips = zips
+    $('#filters .apply').remove()
+    
     this.choropleth = new Choropleth({
       count: 7,
       method: CLASSIFY_METHOD,
-      colorType: 'divergent',
+      colorType: 'sequential',
       colors: COLORS
     })
-    this.demographics = {}
-    this.addChoices()
-    this.adjustPager()
-    $('#filters .apply').remove()
-    this.updateStats(zips)
     this.choropleth.on('change', this.symbology, this)
     $('#filters').append(this.choropleth.getContainer())
+
+    this.demographics = {}
+    $('#facilities').prepend('<h2 class="leg-title"></h2>')
+
+    this.normal = this.dataChoices(
+      NORMAL,
+      'normal', 
+      'Normalize', 
+      [{
+        name: 'normal', 
+        label: 'Not normalized', 
+        values: [false]
+      }]
+    )    
+    this.normal.on('change', this.chooseNormal, this)
+
+    this.dataset = this.dataChoices(soda, 'dataset', 'Dataset', [])
+    this.dataset.on('change', this.chooseData, this)
+
+    this.adjustPager()
+    this.loadDemographics()
+    this.updateStats(zips)
     this.zoomFull()
   }
-  normalize() {
+  chooseNormal() {
     const normal = $('#normal').val()
     if (normal !== 'none') {
       this.updateStats(this.zips)
     }
-  }
-  addNormal() {
-    const normal = $('<select id="normal" class="btn rad-all"><option value="none">Not normalized</option></select>')
-    Object.keys(NORMAL).forEach(key => {
-      const norm = 
-      normal.append(`<option value="${key}">${NORMAL[key].name}</option>`)
-    })
-    normal.insertAfter($('#dataset'))
-    normal.change($.proxy(this.normalize, this))
-    $('<h2 class="leg-title">Evictions</h2>').insertAfter(normal)
   }
   loadDemographics() {
     fetch('./data/demographics.csv').then(response => {
@@ -96,17 +106,31 @@ class App extends FinderApp {
       this.tabs.open('#map')
     }
   }
-  addChoices() {
-    const select = $('<select id="dataset" class="btn rad-all"></select>')
-      .change($.proxy(this.choose, this))
-    Object.keys(soda).forEach(key => {
-      select.append(`<option value="${key}">${soda[key].name}</option>`)
+  dataChoices(obj, name, title, choices) {
+    Object.keys(obj).forEach(key => {
+      choices.push({
+        name,
+        label: obj[key].name,
+        values: [key]
+      })
     })
-    $('#facilities').prepend(select)
-    this.addNormal()
+    choices[0].checked = true
+    const radio = new Choice({
+      target: $('<div></div>'),
+      choices, 
+      radio: true
+    })
+    const collapse = new Collapsible({
+      target: $('<div></div>'),
+      title,
+      content: radio.getContainer(),
+      collapsed: true
+    })
+    $('#facilities').prepend(collapse.getContainer())
+    return radio
   }
   legend() {
-    const dataset = $('#dataset').val()
+    const dataset = this.dataset.val()[0].values[0]
     const legend = $(this.choropleth.legend(this.units(), this.buckets, this.colors))
     $('div.leg').remove()
     $(this.map.getTargetElement()).append(legend)
@@ -146,14 +170,13 @@ class App extends FinderApp {
     return features
   }
   units() {
-    let dataset = soda[$('#dataset').val()]
-    let units = NORMAL[$('#normal').val()]
-    dataset = dataset ? dataset.name : 'Evictions'
+    const dataset = soda[this.dataset.val()[0].values[0]].name
+    let units = NORMAL[this.normal.val()[0].values[0]]
     units = units ? units.name : ''
     return `${dataset} ${units}`.trim()
   }
-  choose(event) {
-    const url = soda[event.target.value].url
+  chooseData(event) {
+    const url = soda[this.dataset.val()[0].values[0]].url
     fetch(url).then(response => {
       response.json().then(json => {
         this.zips = json
@@ -170,7 +193,7 @@ class App extends FinderApp {
   }
   updateStats(zips) {
     const counts = []
-    const normalize = $('#normal').val()
+    const normal = this.normal.val()[0].values[0]
     zips.forEach(zip => {
       let z = zip.zip
       //DOB Complaints missing a lot of zips
@@ -178,11 +201,11 @@ class App extends FinderApp {
         z = z.trim()
         zip.zip = z
         if (z) {
-          if (normalize && normalize !== 'none') {
+          if (normal && normal !== 'none') {
             const demoZip = this.demographics[z]
             if (demoZip) {
-              const norm = demoZip[normalize] * 1
-              const factor = NORMAL[normalize].factor
+              const norm = demoZip[normal] * 1
+              const factor = NORMAL[normal].factor
               let c = 0 
               if (norm !== 0) {
                 c = factor * zip.count / norm

@@ -117,3 +117,9 @@ label div.clr div {
   opacity: .5;
   margin-top: 7px;
 }
+#facilities .clps.rad-all {
+  margin: 5px 5px 0;
+}
+.clps>button:before {
+  margin-right: 5px
+}

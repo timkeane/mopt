@@ -6,49 +6,74 @@ import Stats from './Stats'
 class Choropleth extends Container {
   constructor(options) {
     super(Choropleth.HTML)
+    
+    const counts = [] 
+    for (let i = 7; i > 1; i--) {
+      counts.push({name: 'count', label: `${i} classifications`, values: [i]})
+    }
+    counts[0].checked = true
+    this.count = new Choice({
+      target: $('<div></div>'),
+      choices: counts,
+      radio: true
+    })
+    this.appendCollapsible('Number of classifications', this.count.getContainer(), 'count')
+
     this.method = this.choicesFromKeys(Stats.METHODS, 'method', 'mthd')
     this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'clr-sch')
     this.colors = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
     this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch')
     this.colorsClps = this.appendCollapsible('Color', this.colors.getContainer(), 'clr')
-    this.count = this.find('select.count')
     this.apply = $('<button class="btn rad-all apply">Apply</button>')
     this.getContainer().append(this.apply)
     this.colorType.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
-    this.count.change($.proxy(this.adjustColors, this))
+    this.count.on('change', this.adjustColors, this)
     this.method.on('change', this.adjustCounts, this)
     this.val(options)
   }
   adjustCounts() {
-    const count = this.count.val()
+    const lastCount = this.count.val()[0].values[0]
     const std = this.method.val()[0].values[0] === Stats.METHODS.stdDeviation.name
-    this.count.empty()
+    
     let i = 7
+    let checked = false
+    const counts = [] 
     while (i > 1) {
       if (std) {
         if (i % 2) {
-          this.count.append(`<option value="${i}">${i} Classifications</options>`)
+          counts.push({
+            name: 'count', 
+            label: `${i} classifications`, 
+            values: [i],
+            checked: i === lastCount
+          })
+          if (i === lastCount) {
+            checked = true
+          }
         }
       } else {
-        this.count.append(`<option value="${i}">${i} Classifications</options>`)
+        counts.push({
+          name: 'count', 
+          label: `${i} classifications`, 
+          values: [i],
+          checked: i === lastCount
+        })
+        if (i === lastCount) {
+          checked = true
+        }
       }
       i--
     }
-    if (std) {
-      if (count % 2) {
-        this.count.val(count)
-      } else {
-        this.count.val(7)
-      }
-    } else {
-      this.count.val(count)
+    if (!checked) {
+      counts[0].checked = true
     }
-    this.count.trigger('change')
+    this.count.setChoices(counts)
+    this.count.trigger('change', this.count)
   }
   adjustColors() {
-    const size = $(this.count).val()
+    const size = this.count.val()[0].values[0]
     const colorType = this.colorType.val()[0].label
     const colors = Choropleth.COLORS[colorType]
     const inputs = this.colors.inputs
@@ -64,14 +89,18 @@ class Choropleth extends Container {
         label,
         name: input.attr('name'),
         values,
-        checked: input.is(':checked')
-        })
+        checked: input.prop('checked')
+      })
     })
     this.colors.setChoices(choices)
   }
   val(options) {
     if (options) {
-      this.count.val(options.count)
+      this.count.choices.forEach(choice => {
+        if (choice.values[0] === options.count) {
+          this.method.val([choice])
+        }
+      })
       this.method.choices.forEach(choice => {
         if (choice.values[0] === options.method) {
           this.method.val([choice])
@@ -144,12 +173,17 @@ class Choropleth extends Container {
   colorChoices(event) {
     const choices = []
     event.val().forEach(colorSchemes => {
-      colorSchemes.values.forEach(colorScheme => {
+      colorSchemes.values.forEach((colorScheme, i) => {
         const label = $('<div class="clr">&nbsp;</div>')
         colorScheme.forEach(color => {
           label.append(`<div style="background-color:${color}"></div>`)
         })
-        choices.push({name: 'colors', label, values: colorScheme})
+        choices.push({
+          name: 'colors', 
+          label, 
+          values: colorScheme, 
+          checked: $(this.colors.inputs[i]).prop('checked')
+        })
       })
     })
     this.colors.setChoices(choices)
@@ -202,18 +236,8 @@ Choropleth.COLORS = {
     ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026']     
   ]
 }
-Choropleth.LIMITS = [2, 7]
 
-Choropleth.HTML = `<div class="choro">
-  <select class="btn rad-all count">
-    <option value="7">7 classifications</option>
-    <option value="6">6 classifications</option>
-    <option value="5">5 classifications</option>
-    <option value="4">4 classifications</option>
-    <option value="3">3 classifications</option>
-    <option value="2">2 classifications</option>
-  </select>
-</div>`
+Choropleth.HTML = '<div class="choro"></div>'
 
 Choropleth.LEGEND_HTML = `<div class="leg">
   <h3></h3>
