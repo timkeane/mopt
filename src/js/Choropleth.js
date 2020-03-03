@@ -107,7 +107,7 @@ class Choropleth extends Container {
         }
       })
       this.colorType.choices.forEach(choice => {
-        if (choice.label === options.colorType) {
+        if (choice.label.toLowerCase() === options.colorType) {
           this.colorType.val([choice])
         }
       })
@@ -151,14 +151,13 @@ class Choropleth extends Container {
     this.getContainer().append(collapsible.getContainer())
     return collapsible
   }
-  choicesFromKeys(obj, name, title, css) {
+  choicesFromKeys(obj, name, css) {
     const choices = []
     Object.keys(obj).forEach(key => {
       const props = obj[key]
-      let label = key
-      let values = props
+      let label = props.label
+      let values = props.values
       if (!$.isArray(values)) {
-        label = props.label
         values = [props.name]
       }
       choices.push({name, label, values})
@@ -225,21 +224,27 @@ class Choropleth extends Container {
 }
 
 Choropleth.COLORS = {
-  divergent: [
-    ['#762a83', '#af8dc3', '#e7d4e8', '#f7f7f7', '#d9f0d3', '#7fbf7b', '#1b7837'],
-    ['#8c510a', '#d8b365', '#f6e8c3', '#f5f5f5', '#c7eae5', '#5ab4ac', '#01665e'],
-    ['#b2182b', '#ef8a62', '#fddbc7', '#ffffff', '#e0e0e0', '#999999', '#4d4d4d']
-  ],
-  sequential: [
-    ['#feedde', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#8c2d04'],
-    ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#99000d'],
-    ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026']     
-  ]
+  divergent: {
+    label: 'Divergent',
+    values: [
+      ['#762a83', '#af8dc3', '#e7d4e8', '#f7f7f7', '#d9f0d3', '#7fbf7b', '#1b7837'],
+      ['#8c510a', '#d8b365', '#f6e8c3', '#f5f5f5', '#c7eae5', '#5ab4ac', '#01665e'],
+      ['#b2182b', '#ef8a62', '#fddbc7', '#ffffff', '#e0e0e0', '#999999', '#4d4d4d']
+    ]
+  },
+  sequential: {
+    label: 'Sequential',
+    values: [
+      ['#feedde', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#8c2d04'],
+      ['#fee5d9', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#99000d'],
+      ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026']     
+    ]
+  }
 }
 
 Choropleth.HTML = '<div class="choro"></div>'
 
-Choropleth.LEGEND_HTML = `<div class="leg">
+Choropleth.LEGEND_HTML = `<div class="leg" title="Map legend">
   <h3></h3>
   <div class="its"></div>
 </div>`

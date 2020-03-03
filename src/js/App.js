@@ -18,7 +18,7 @@ import Dialog from 'nyc-lib/nyc/Dialog'
 import fetchTimeout from './fetchTimeout'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
-const COLORS = Choropleth.COLORS.sequential[2]
+const COLORS = Choropleth.COLORS.sequential.values[2]
 const NORMAL = {
   POP: {name: `per ${new Number(1000).toLocaleString()} residents`, factor: 1000},
   OWN_OCC: {name: `per ${new Number(1000).toLocaleString()} owner occupied housing units`, factor: 1000},
@@ -136,6 +136,7 @@ class App extends FinderApp {
     const legend = $(this.choropleth.legend(this.units(), this.buckets, this.colors))
     $('div.leg').remove()
     $(this.map.getTargetElement()).append(legend)
+    legend.click(() => {legend.toggleClass('btn btn-sq rad-all')})
   }
   adjustPager() {
     this.sorted = {Name: false, Count: false}

@@ -58,6 +58,19 @@ div.leg {
   z-index: 2000;
   background-color: rgba(255,255,255,.5);
   padding: 5px;
+  cursor: pointer;
+}
+div.leg.btn-sq {
+  width: 33px;
+  height: 33px;
+  margin: 3px;
+  padding: 0;
+  background-color: var(--color-dark-translucent);
+  color: var(--color-light);
+  background-image: url(../img/leg.svg);
+}
+div.leg.btn-sq * {
+  display: none;
 }
 div.leg h3 {
   max-width: 150px;
