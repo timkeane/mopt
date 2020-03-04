@@ -117,7 +117,6 @@ class Choropleth extends Container {
           this.colors.val([choice])
         }
       })
-      this.colors.choices
     } else {
       let colors = this.colors.val()[0].values
       colors = this.resizeColors(colors, this.count.val())
@@ -189,6 +188,7 @@ class Choropleth extends Container {
     if (!this.colorsClps.find('.content').is(':visible')){
       this.colorsClps.toggle()
     }
+    this.adjustColors()
   }
   legItem(color, min, max, places) {
     places = places || 0
