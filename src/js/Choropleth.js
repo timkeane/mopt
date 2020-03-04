@@ -20,14 +20,14 @@ class Choropleth extends Container {
     this.appendCollapsible('Number of classifications', this.count.getContainer(), 'count')
 
     this.method = this.choicesFromKeys(Stats.METHODS, 'method', 'mthd')
-    this.colorType = this.choicesFromKeys(Choropleth.COLORS, 'colorType', 'clr-sch')
+    this.colorScheme = this.choicesFromKeys(Choropleth.COLORS, 'colorScheme', 'clr-sch')
     this.colors = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
-    this.appendCollapsible('Color scheme', this.colorType.getContainer(), 'clr-sch')
+    this.appendCollapsible('Color scheme', this.colorScheme.getContainer(), 'clr-sch')
     this.colorsClps = this.appendCollapsible('Color', this.colors.getContainer(), 'clr')
     this.apply = $('<button class="btn rad-all apply">Apply</button>')
     this.getContainer().append(this.apply)
-    this.colorType.on('change', this.colorChoices, this)
+    this.colorScheme.on('change', this.colorChoices, this)
     this.apply.click($.proxy(this.btnHdlr, this))
     this.count.on('change', this.adjustColors, this)
     this.method.on('change', this.adjustCounts, this)
@@ -74,8 +74,8 @@ class Choropleth extends Container {
   }
   adjustColors() {
     const size = this.count.val()[0].values[0]
-    const colorType = this.colorType.val()[0].label.toLowerCase()
-    const colors = Choropleth.COLORS[colorType].values
+    const colorScheme = this.colorScheme.val()[0].label.toLowerCase()
+    const colors = Choropleth.COLORS[colorScheme].values
     const inputs = this.colors.inputs
     const choices = []
     colors.forEach((color, i) => {
@@ -85,6 +85,7 @@ class Choropleth extends Container {
       values.forEach(color => {
         label.append(`<div style="background-color:${color}"></div>`)
       })
+      label.append('<div class="rev">&#x21C4;</div>')
       choices.push({
         label,
         name: input.attr('name'),
@@ -106,12 +107,12 @@ class Choropleth extends Container {
           this.method.val([choice])
         }
       })
-      this.colorType.choices.forEach(choice => {
-        if (choice.label.toLowerCase() === options.colorType) {
-          this.colorType.val([choice])
+      this.colorScheme.choices.forEach(choice => {
+        if (choice.label.toLowerCase() === options.colorScheme) {
+          this.colorScheme.val([choice])
         }
       })
-      this.colorType.trigger('change', this.colorType)
+      this.colorScheme.trigger('change', this.colorScheme)
       this.colors.choices.forEach(choice => {
         if (choice.values === options.colors) {
           this.colors.val([choice])
@@ -168,18 +169,18 @@ class Choropleth extends Container {
     })
     return radio
   }
-  colorChoices(event) {
+  colorChoices() {
     const choices = []
-    event.val().forEach(colorSchemes => {
-      colorSchemes.values.forEach((colorScheme, i) => {
+    this.colorScheme.val().forEach(schemes => {
+      schemes.values.forEach((scheme, i) => {
         const label = $('<div class="clr">&nbsp;</div>')
-        colorScheme.forEach(color => {
+        scheme.forEach(color => {
           label.append(`<div style="background-color:${color}"></div>`)
         })
         choices.push({
           name: 'colors', 
           label, 
-          values: colorScheme, 
+          values: scheme, 
           checked: $(this.colors.inputs[i]).prop('checked')
         })
       })
@@ -189,6 +190,9 @@ class Choropleth extends Container {
       this.colorsClps.toggle()
     }
     this.adjustColors()
+    if (this.colors.val().length === 0) {
+      this.colors.val([this.colors.choices[0]])
+    }
   }
   legItem(color, min, max, places) {
     places = places || 0

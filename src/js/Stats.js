@@ -66,7 +66,7 @@ class Stats {
 Stats.METHODS = {
   equalInterval: {label: 'Equal interval', name: 'equalIntervalClasses'},
   stdDeviation: {label: 'Standard deviation', name: 'stdClasses'},
-  ckmeans: {label: 'Ckmeans natural breaks', name: 'ckmeansClasses'}
+  ckmeans: {label: 'Ckmeans clustered breaks', name: 'ckmeansClasses'}
 }
 
 export default Stats

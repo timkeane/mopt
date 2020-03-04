@@ -54,7 +54,7 @@ class App extends FinderApp {
     this.choropleth = new Choropleth({
       count: 7,
       method: CLASSIFY_METHOD,
-      colorType: 'sequential',
+      colorScheme: 'sequential',
       colors: COLORS
     })
     this.choropleth.on('change', this.symbology, this)
