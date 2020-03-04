@@ -7,7 +7,9 @@ class Choropleth extends Container {
   constructor(options) {
     super(Choropleth.HTML)
     
-    const counts = [] 
+    this.colorSchemes = Object.assign({}, Choropleth.COLORS)
+
+    const counts = []
     for (let i = 7; i > 1; i--) {
       counts.push({name: 'count', label: `${i} classifications`, values: [i]})
     }
@@ -20,7 +22,7 @@ class Choropleth extends Container {
     this.appendCollapsible('Number of classifications', this.count.getContainer(), 'count')
 
     this.method = this.choicesFromKeys(Stats.METHODS, 'method', 'mthd')
-    this.colorScheme = this.choicesFromKeys(Choropleth.COLORS, 'colorScheme', 'clr-sch')
+    this.colorScheme = this.choicesFromKeys(this.colorSchemes, 'colorScheme', 'clr-sch')
     this.colors = this.choicesFromKeys({}, 'color', 'clr')
     this.appendCollapsible('Classification method', this.method.getContainer(), 'cls-mth')
     this.appendCollapsible('Color scheme', this.colorScheme.getContainer(), 'clr-sch')
@@ -73,27 +75,40 @@ class Choropleth extends Container {
     this.count.trigger('change', this.count)
   }
   adjustColors() {
+    const me = this
     const size = this.count.val()[0].values[0]
     const colorScheme = this.colorScheme.val()[0].label.toLowerCase()
-    const colors = Choropleth.COLORS[colorScheme].values
+    const colors = this.colorSchemes[colorScheme].values
     const inputs = this.colors.inputs
     const choices = []
     colors.forEach((color, i) => {
-      const label = $('<div class="clr">&nbsp;</div>')
+      const label = $('<div>&nbsp;</div>')
       const values = this.resizeColors(color, size)
       const input = $(inputs.get(i))
       values.forEach(color => {
-        label.append(`<div style="background-color:${color}"></div>`)
+        label.append(`<div class="clr" style="background-color:${color}"></div>`)
       })
-      label.append('<div class="rev">&#x21C4;</div>')
-      choices.push({
+      const choice = {
         label,
         name: input.attr('name'),
         values,
         checked: input.prop('checked')
-      })
+      }
+      choices.push(choice)
+      const reverse = $('<div class="rev">&#x21C4;</div>')
+        .data('choice', choice)
+        .data('colorScheme', this.colorScheme.val()[0].label.toLowerCase())
+        .click($.proxy(this.reverseColors, this))
+      label.append(reverse)
     })
     this.colors.setChoices(choices)
+  }
+  reverseColors(event) {
+    const target = $(event.target)
+    this.val({
+      colorScheme: target.data('colorScheme'),
+      colors: target.data('choice').values.reverse()
+    })
   }
   val(options) {
     if (options) {
@@ -113,9 +128,18 @@ class Choropleth extends Container {
         }
       })
       this.colorScheme.trigger('change', this.colorScheme)
-      this.colors.choices.forEach(choice => {
-        if (choice.values === options.colors) {
+      this.colors.choices.some((choice, i) => {
+        if (this.arrEq(choice.values, options.colors)) {
+          return true
           this.colors.val([choice])
+          this.adjustColors()
+        } else if (this.arrEq(choice.values.reverse(), options.colors)) {
+          this.colorSchemes[options.colorScheme].values[i].reverse()
+          this.colors.val([choice])
+          this.adjustColors()
+          return true
+        } else {
+          choice.values.reverse()
         }
       })
     } else {
@@ -126,6 +150,16 @@ class Choropleth extends Container {
         colors
       }
     }
+  }
+  arrEq(array1, array2) {
+    let equal = true
+    if (array1.length === array2.length) {
+      array1.some((a, i) => {
+        equal = a === array2[i]
+        return !equal
+      })
+    }
+    return equal
   }
   resizeColors(original, size) {
     const modified = []

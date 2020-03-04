@@ -121,7 +121,7 @@ div.leg .sym {
 .clps {
   margin-bottom: 3px;
 }
-label div.clr div {
+label div.clr {
   display: block;
   width: 20px;
   height: 20px;
@@ -130,9 +130,19 @@ label div.clr div {
   opacity: .5;
   margin-top: 7px;
 }
+label div.rev {
+  font-size: 20px;
+  font-weight: bold;
+  float: right;
+  opacity: 1;
+  margin: 2px 0 0 0;
+  height: 30px;
+  cursor: pointer;
+}
 #facilities .clps.rad-all {
   margin: 5px 5px 0;
 }
 .clps>button:before {
   margin-right: 5px
 }
+
