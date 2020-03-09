@@ -39,10 +39,9 @@ class Choropleth extends Container {
     const lastCount = this.count.val()[0].values[0]
     const std = this.method.val()[0].values[0] === Stats.METHODS.stdDeviation.name
     
-    let i = 7
     let checked = false
     const counts = [] 
-    while (i > 1) {
+    for (let i = 7; i > 1; i--) {
       if (std) {
         if (i % 2) {
           counts.push({
@@ -66,7 +65,6 @@ class Choropleth extends Container {
           checked = true
         }
       }
-      i--
     }
     if (!checked) {
       counts[0].checked = true
@@ -95,7 +93,7 @@ class Choropleth extends Container {
         checked: input.prop('checked')
       }
       choices.push(choice)
-      const reverse = $('<div class="rev">&#x21C4;</div>')
+      const reverse = $(Choropleth.REV_BTN_HTML)
         .data('choice', choice)
         .data('colorScheme', this.colorScheme.val()[0].label.toLowerCase())
         .click($.proxy(this.reverseColors, this))
@@ -286,5 +284,9 @@ Choropleth.LEGEND_HTML = `<div class="leg" title="Map legend">
   <h3></h3>
   <div class="its"></div>
 </div>`
+
+Choropleth.REV_BTN_HTML = `<button class="rev" title="Reverse colors">
+  <span class="screen-reader-only">Reverse colors</span>&#x21C4;
+</button>`
 
 export default Choropleth
