@@ -9,13 +9,13 @@ import decorations from './decorations'
 import facilityStyle from './facility-style'
 import Basemap from 'nyc-lib/nyc/ol/Basemap'
 import soda from './soda'
-import Stats from './Stats'
-import Choropleth from './Choropleth'
+import Stats from 'nyc-lib/nyc/Stats'
+import Choropleth from 'nyc-lib/nyc/Choropleth'
 import Papa from 'papaparse'
 import Choice from 'nyc-lib/nyc/Choice'
 import Collapsible from 'nyc-lib/nyc/Collapsible'
 import Dialog from 'nyc-lib/nyc/Dialog'
-import fetchTimeout from './fetchTimeout'
+import fetchTimeout from 'nyc-lib/nyc/fetchTimeout'
 
 const CLASSIFY_METHOD = Stats.METHODS.ckmeans.name
 const COLORS = Choropleth.COLORS.sequential.values[2]

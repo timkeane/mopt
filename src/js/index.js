@@ -1,7 +1,7 @@
 import App from './App'
 import soda from './soda'
 import Dialog from 'nyc-lib/nyc/Dialog'
-import fetchTimeout from './fetchTimeout'
+import fetchTimeout from 'nyc-lib/nyc/fetchTimeout'
 
 fetchTimeout(soda.EVICTION.url).then(response => {
   if (!response.ok) {
